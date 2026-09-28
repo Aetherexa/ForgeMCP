@@ -1,11 +1,10 @@
-import type { Tool } from "../tool/tool.js";
 import type { Middleware } from "../interceptor/index.js";
+import type { Tool } from "../tool/tool.js";
 
 /**
  * Collects contributions made by a module.
  */
 export interface ModuleBuilder {
-
   /**
    * Registers a tool.
    */
@@ -15,5 +14,4 @@ export interface ModuleBuilder {
    * Registers middleware.
    */
   middleware(middleware: Middleware): this;
-
 }
