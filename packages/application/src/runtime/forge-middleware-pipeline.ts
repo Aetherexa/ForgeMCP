@@ -14,9 +14,10 @@ type TerminalHandler<TInput, TResult> = (
 /**
  * Default ForgeMCP middleware pipeline.
  */
-export class ForgeMiddlewarePipeline<TInput = unknown, TResult = unknown>
-  implements MiddlewarePipeline<TInput, TResult>
-{
+export class ForgeMiddlewarePipeline<
+  TInput = unknown,
+  TResult = unknown,
+> implements MiddlewarePipeline<TInput, TResult> {
   public constructor(
     private readonly middleware: readonly Middleware<TInput, TResult>[],
     private readonly terminal: TerminalHandler<TInput, TResult>,
