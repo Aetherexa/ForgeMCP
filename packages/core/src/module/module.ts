@@ -1,11 +1,20 @@
-import type { Constructor } from "../types/index.js";
+import type { MaybePromise } from "../types/index.js";
+import type { ModuleBuilder } from "./module-builder.js";
 
 /**
- * Marker interface for ForgeMCP modules.
+ * Represents a ForgeMCP module.
+ *
+ * Modules contribute tools and middleware to an application during
+ * application startup.
  */
-export interface Module {}
+export interface Module {
+  /**
+   * Contributes this module's capabilities to the application.
+   */
+  configure(builder: ModuleBuilder): MaybePromise<void>;
+}
 
 /**
- * Constructor type for modules.
+ * Constructor type for modules that can be instantiated by the runtime.
  */
-export type ModuleConstructor = Constructor<Module>;
+export type ModuleConstructor = new () => Module;
