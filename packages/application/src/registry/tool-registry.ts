@@ -9,13 +9,20 @@ export class ToolRegistry {
   /**
    * Registers a tool.
    *
-   * Tool names must be non-empty and unique within an application.
+   * Tool names must be non-empty, normalized, and unique within an application.
    */
   public register(tool: Tool): void {
-    const name = tool.metadata.name.trim();
+    const name = tool.metadata.name;
+    const normalizedName = name.trim();
 
-    if (name.length === 0) {
+    if (normalizedName.length === 0) {
       throw new Error("Tool name must not be empty.");
+    }
+
+    if (normalizedName !== name) {
+      throw new Error(
+        "Tool name must not contain leading or trailing whitespace.",
+      );
     }
 
     if (this.tools.has(name)) {
