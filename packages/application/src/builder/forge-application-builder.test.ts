@@ -16,8 +16,7 @@ class TestModule implements Module {
 
 describe("ForgeApplicationBuilder", () => {
   it("builds an application from registered modules", async () => {
-    const application = ForgeApplicationBuilder
-      .create()
+    const application = ForgeApplicationBuilder.create()
       .use(TestModule)
       .build();
 
