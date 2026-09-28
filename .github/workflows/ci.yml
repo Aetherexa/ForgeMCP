@@ -46,7 +46,11 @@ jobs:
         run: pnpm lint
 
       - name: Format
-        run: pnpm format
+        run: |
+          pnpm --filter @forgemcp/core exec prettier --write "src/**/*.ts" "package.json" "tsconfig.json" "tsdown.config.ts"
+          pnpm --filter @forgemcp/application exec prettier --write "src/**/*.ts" "package.json" "tsconfig.json" "tsdown.config.ts"
+          git diff
+          git diff --exit-code
 
       - name: Test
         run: pnpm test
