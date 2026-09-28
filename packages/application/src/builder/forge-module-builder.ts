@@ -1,17 +1,19 @@
 import type { Middleware, ModuleBuilder, Tool } from "@forgemcp/core";
 
+import { ToolRegistry } from "../registry/tool-registry.js";
+
 /**
  * Default collector for contributions made by application modules.
  */
 export class ForgeModuleBuilder implements ModuleBuilder {
-  private readonly registeredTools: Tool[] = [];
+  private readonly tools = new ToolRegistry();
   private readonly registeredMiddleware: Middleware[] = [];
 
   /**
    * Registers a tool contribution.
    */
   public tool(tool: Tool): this {
-    this.registeredTools.push(tool);
+    this.tools.register(tool);
     return this;
   }
 
@@ -27,7 +29,7 @@ export class ForgeModuleBuilder implements ModuleBuilder {
    * Returns the tools contributed by configured modules.
    */
   public getTools(): readonly Tool[] {
-    return [...this.registeredTools];
+    return this.tools.getAll();
   }
 
   /**
