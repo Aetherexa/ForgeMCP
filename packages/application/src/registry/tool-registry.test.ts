@@ -45,6 +45,14 @@ describe("ToolRegistry", () => {
     );
   });
 
+  it("rejects tool names with surrounding whitespace", () => {
+    const registry = new ToolRegistry();
+
+    expect(() => registry.register(createTool(" echo "))).toThrow(
+      "Tool name must not contain leading or trailing whitespace.",
+    );
+  });
+
   it("rejects duplicate tool names", () => {
     const registry = new ToolRegistry();
 
