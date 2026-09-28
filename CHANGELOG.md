@@ -6,6 +6,8 @@ The project follows semantic versioning once public packages begin publishing st
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-09-28
+
 ### Added
 
 - application lifecycle runtime;
@@ -29,6 +31,3 @@ The project follows semantic versioning once public packages begin publishing st
 
 - corrected the misspelled `cosntructor.ts` type filename.
 
-## [0.1.0] - Unreleased
-
-The first release will contain the ForgeMCP framework kernel.
