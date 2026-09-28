@@ -37,10 +37,11 @@ Before requesting review:
 ```bash
 pnpm build
 pnpm typecheck
+pnpm lint
 pnpm test
 ```
 
-Lint and formatting gates will become mandatory before the v0.1 release is marked complete.
+The formatting gate is being finalized as part of the v0.1 release hardening work.
 
 ## Architecture rules
 
@@ -64,7 +65,7 @@ Changes to exported contracts should explain:
 3. compatibility impact;
 4. tests covering the new behavior.
 
-Significant architectural decisions should be documented in an ADR once the ADR process is introduced.
+Significant architectural decisions should be recorded under `docs/adr/`.
 
 ## Commit messages
 
