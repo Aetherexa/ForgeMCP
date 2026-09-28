@@ -4,16 +4,14 @@ import type {
   ModuleType,
 } from "@forgemcp/core";
 
+import { ModuleRegistry } from "../registry/module-registry.js";
 import { ForgeApplication } from "../runtime/forge-application.js";
 
 /**
  * Default implementation of the Forge application builder.
  */
 export class ForgeApplicationBuilder implements ApplicationBuilder {
-  /**
-   * Registered module types.
-   */
-  private readonly modules: ModuleType[] = [];
+  private readonly modules = new ModuleRegistry();
 
   /**
    * Prevent direct instantiation.
@@ -31,13 +29,11 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
    * Registers a module.
    */
   public use(module: ModuleType): this {
-    if (this.modules.includes(module)) {
-      throw new Error(
-        `Module '${module.name}' is already registered.`,
-      );
+    if (this.modules.has(module)) {
+      throw new Error(`Module '${module.name}' is already registered.`);
     }
 
-    this.modules.push(module);
+    this.modules.register(module);
 
     return this;
   }
@@ -46,6 +42,6 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
    * Builds the application.
    */
   public build(): Application {
-    return new ForgeApplication([...this.modules]);
+    return new ForgeApplication(this.modules.getAll());
   }
 }

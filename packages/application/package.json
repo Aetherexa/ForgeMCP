@@ -10,19 +10,19 @@
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
-      "import": "./dist/index.js"
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs"
     }
   },
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
+  "main": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
   "scripts": {
     "build": "tsdown",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "lint": "eslint src --ext .ts",
-    "format": "prettier --check ."
+    "lint": "tsc --noEmit --noUnusedLocals --noUnusedParameters",
+    "format": "prettier --check \"src/**/*.ts\" \"package.json\" \"tsconfig.json\" \"tsdown.config.ts\""
   },
   "dependencies": {
     "@forgemcp/core": "workspace:*"

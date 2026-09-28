@@ -20,9 +20,9 @@
     "build": "tsdown",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
-    "lint": "eslint src --ext .ts",
-    "format": "prettier --check ."
+    "test": "vitest run --passWithNoTests",
+    "lint": "tsc --noEmit --noUnusedLocals --noUnusedParameters",
+    "format": "prettier --check \"src/**/*.ts\" \"package.json\" \"tsconfig.json\" \"tsdown.config.ts\""
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

@@ -1,17 +1,9 @@
 import type { ModuleConstructor } from "@forgemcp/core";
 
 /**
- * Maintains the collection of application modules.
+ * Maintains the collection of application module constructors.
  *
- * The registry is responsible only for storing and
- * querying registered modules.
- *
- * Future versions will also manage:
- *
- * - Module metadata
- * - Module instances
- * - Dependency graph
- * - Plugin modules
+ * The registry stores unique module types in registration order.
  */
 export class ModuleRegistry {
   private readonly modules = new Set<ModuleConstructor>();

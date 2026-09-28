@@ -1,6 +1,6 @@
+import { LifecycleState } from "./lifecycle-state.js";
 import type { Startable } from "./startable.js";
 import type { Stoppable } from "./stoppable.js";
-import { LifecycleState } from "./lifecycle-state.js";
 
 /**
  * Represents a component with a managed lifecycle.
