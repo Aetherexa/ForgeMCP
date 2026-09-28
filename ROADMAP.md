@@ -26,7 +26,7 @@ Goal: establish the execution model independent of MCP transports.
 - [x] architecture decision records
 - [x] formatting quality gate
 - [x] CI execution confirmation
-- [ ] v0.1 release acceptance
+- [x] v0.1 release acceptance
 
 ### Acceptance
 
