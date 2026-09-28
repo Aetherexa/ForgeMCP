@@ -9,10 +9,7 @@ import type { Next } from "./next.js";
  * Middleware can inspect, transform, or short-circuit a request before
  * passing control to the next middleware or the target tool.
  */
-export interface Middleware<
-  TInput = unknown,
-  TResult = unknown,
-> {
+export interface Middleware<TInput = unknown, TResult = unknown> {
   /**
    * Invokes the middleware.
    *
