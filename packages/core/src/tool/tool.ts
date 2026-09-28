@@ -6,10 +6,7 @@ import type { ToolResult } from "./tool-result.js";
 /**
  * Represents executable business capability.
  */
-export interface Tool<
-  TInput = unknown,
-  TResult = unknown
-> {
+export interface Tool<TInput = unknown, TResult = unknown> {
   /**
    * Tool metadata.
    */
@@ -20,6 +17,6 @@ export interface Tool<
    */
   execute(
     context: ExecutionContext,
-    input: TInput
+    input: TInput,
   ): MaybePromise<ToolResult<TResult>>;
 }
