@@ -1,8 +1,4 @@
-import type {
-  ExecutionContext,
-  Middleware,
-  ToolResult,
-} from "@forgemcp/core";
+import type { ExecutionContext, Middleware, ToolResult } from "@forgemcp/core";
 import { describe, expect, it } from "vitest";
 
 import { ForgeMiddlewarePipeline } from "./forge-middleware-pipeline.js";
