@@ -15,8 +15,5 @@ export interface Tool<TInput = unknown, TResult = unknown> {
   /**
    * Executes the tool.
    */
-  execute(
-    context: ExecutionContext,
-    input: TInput,
-  ): MaybePromise<ToolResult<TResult>>;
+  execute(context: ExecutionContext, input: TInput): MaybePromise<ToolResult<TResult>>;
 }
