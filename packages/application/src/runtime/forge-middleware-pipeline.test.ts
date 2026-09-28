@@ -20,7 +20,7 @@ describe("ForgeMiddlewarePipeline", () => {
     const calls: string[] = [];
 
     const first: Middleware<string, string> = {
-      async invoke(executionContext, input, next) {
+      async invoke(_executionContext, input, next) {
         calls.push("first:before");
         const result = await next(`${input}:first`);
         calls.push("first:after");
@@ -29,7 +29,7 @@ describe("ForgeMiddlewarePipeline", () => {
     };
 
     const second: Middleware<string, string> = {
-      async invoke(executionContext, input, next) {
+      async invoke(_executionContext, input, next) {
         calls.push("second:before");
         const result = await next(`${input}:second`);
         calls.push("second:after");
