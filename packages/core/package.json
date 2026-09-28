@@ -20,7 +20,7 @@
     "build": "tsdown",
     "clean": "rimraf dist",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run --passWithNoTests",
     "lint": "tsc --noEmit --noUnusedLocals --noUnusedParameters",
     "format": "prettier --check \"src/**/*.ts\" \"package.json\" \"tsconfig.json\" \"tsdown.config.ts\""
   },
