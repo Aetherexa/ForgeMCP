@@ -41,8 +41,6 @@ pnpm lint
 pnpm test
 ```
 
-The formatting gate is being finalized as part of the v0.1 release hardening work.
-
 ## Architecture rules
 
 - `@forgemcp/core` contains contracts and portable abstractions.
