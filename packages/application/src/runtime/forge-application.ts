@@ -25,9 +25,7 @@ export class ForgeApplication implements Application {
   /**
    * Creates a new Forge application.
    */
-  public constructor(
-    private readonly modules: readonly ModuleType[],
-  ) {}
+  public constructor(private readonly modules: readonly ModuleType[]) {}
 
   /**
    * Current lifecycle state.
