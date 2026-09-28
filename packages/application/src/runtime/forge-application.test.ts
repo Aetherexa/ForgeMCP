@@ -180,7 +180,8 @@ describe("ForgeApplication tool execution", () => {
   it("executes tools through registered middleware", async () => {
     const middleware: Middleware = {
       async invoke(_context, input, next) {
-        const value = typeof input === "string" ? `${input}:middleware` : input;
+        const value =
+          typeof input === "string" ? `${input}:middleware` : input;
         return next(value);
       },
     };
