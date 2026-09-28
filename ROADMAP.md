@@ -21,8 +21,11 @@ Goal: establish the execution model independent of MCP transports.
 - [x] application-level tool dispatch
 - [x] kernel tests
 - [x] CI build/typecheck/test workflow
-- [ ] lint and format quality gates
-- [ ] final repository documentation review
+- [x] static lint quality gate
+- [x] architecture and contributor documentation
+- [x] architecture decision records
+- [ ] formatting quality gate
+- [ ] CI execution confirmation
 - [ ] v0.1 release acceptance
 
 ### Acceptance
