@@ -30,9 +30,7 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
    */
   public use(module: ModuleType): this {
     if (this.modules.has(module)) {
-      throw new Error(
-        `Module '${module.name}' is already registered.`,
-      );
+      throw new Error(`Module '${module.name}' is already registered.`);
     }
 
     this.modules.register(module);
