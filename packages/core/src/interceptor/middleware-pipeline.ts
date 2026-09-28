@@ -5,10 +5,7 @@ import type { MaybePromise } from "../types/index.js";
 /**
  * Represents an executable middleware pipeline.
  */
-export interface MiddlewarePipeline<
-  TInput = unknown,
-  TResult = unknown,
-> {
+export interface MiddlewarePipeline<TInput = unknown, TResult = unknown> {
   execute(
     context: ExecutionContext,
     input: TInput,
