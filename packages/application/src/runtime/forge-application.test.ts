@@ -1,7 +1,9 @@
 import {
   LifecycleState,
+  type Middleware,
   type Module,
   type ModuleBuilder,
+  type Tool,
 } from "@forgemcp/core";
 import { describe, expect, it } from "vitest";
 
@@ -127,5 +129,101 @@ describe("ForgeApplication module composition", () => {
     );
 
     expect(application.state).toBe(LifecycleState.Created);
+  });
+});
+
+describe("ForgeApplication tool execution", () => {
+  it("requires the application to be started", async () => {
+    const application = new ForgeApplication([]);
+
+    await expect(application.execute("echo", "hello")).rejects.toThrow(
+      "Application must be started before executing tools.",
+    );
+  });
+
+  it("executes a registered tool with request-scoped context", async () => {
+    let executionId = "";
+    let source: unknown;
+
+    const echoTool: Tool = {
+      metadata: {
+        name: "echo",
+        description: "Returns the supplied input.",
+      },
+      execute(context, input) {
+        executionId = context.execution.id;
+        source = context.execution.attributes.source;
+        return { value: input };
+      },
+    };
+
+    class EchoModule implements Module {
+      public configure(builder: ModuleBuilder): void {
+        builder.tool(echoTool);
+      }
+    }
+
+    const application = new ForgeApplication([EchoModule]);
+    await application.start();
+
+    const result = await application.execute<string, string>(
+      "echo",
+      "hello",
+      { source: "test" },
+    );
+
+    expect(result.value).toBe("hello");
+    expect(executionId.length).toBeGreaterThan(0);
+    expect(source).toBe("test");
+  });
+
+  it("executes tools through registered middleware", async () => {
+    const middleware: Middleware = {
+      async invoke(_context, input, next) {
+        const value = typeof input === "string" ? `${input}:middleware` : input;
+        return next(value);
+      },
+    };
+
+    const echoTool: Tool = {
+      metadata: { name: "echo" },
+      execute(_context, input) {
+        return { value: input };
+      },
+    };
+
+    class RuntimeModule implements Module {
+      public configure(builder: ModuleBuilder): void {
+        builder.middleware(middleware);
+        builder.tool(echoTool);
+      }
+    }
+
+    const application = new ForgeApplication([RuntimeModule]);
+    await application.start();
+
+    const result = await application.execute<string, string>("echo", "hello");
+
+    expect(result.value).toBe("hello:middleware");
+  });
+
+  it("throws for unknown tool names", async () => {
+    const application = new ForgeApplication([]);
+    await application.start();
+
+    await expect(application.execute("missing", undefined)).rejects.toThrow(
+      "Tool 'missing' is not registered.",
+    );
+  });
+
+  it("prevents tool execution after the application is stopped", async () => {
+    const application = new ForgeApplication([]);
+
+    await application.start();
+    await application.stop();
+
+    await expect(application.execute("echo", "hello")).rejects.toThrow(
+      "Application must be started before executing tools.",
+    );
   });
 });
