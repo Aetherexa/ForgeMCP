@@ -83,16 +83,12 @@ corepack prepare pnpm@11.10.0 --activate
 pnpm install
 ```
 
-Build the workspace:
+Validate the workspace:
 
 ```bash
 pnpm build
-```
-
-Run type checks and tests:
-
-```bash
 pnpm typecheck
+pnpm lint
 pnpm test
 ```
 
@@ -154,6 +150,7 @@ await app.stop();
 - [Contributing](./CONTRIBUTING.md)
 - [Security](./SECURITY.md)
 - [Changelog](./CHANGELOG.md)
+- [Architecture decisions](./docs/adr/)
 
 ## License
 
