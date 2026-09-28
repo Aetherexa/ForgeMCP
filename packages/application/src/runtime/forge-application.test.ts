@@ -207,6 +207,36 @@ describe("ForgeApplication tool execution", () => {
     expect(result.value).toBe("hello:middleware");
   });
 
+  it("creates an isolated execution context for each invocation", async () => {
+    const executionIds: string[] = [];
+    const sources: unknown[] = [];
+
+    const contextTool: Tool = {
+      metadata: { name: "context" },
+      execute(context) {
+        executionIds.push(context.execution.id);
+        sources.push(context.execution.attributes.source);
+        return { value: context.execution.id };
+      },
+    };
+
+    class ContextModule implements Module {
+      public configure(builder: ModuleBuilder): void {
+        builder.tool(contextTool);
+      }
+    }
+
+    const application = new ForgeApplication([ContextModule]);
+    await application.start();
+
+    await application.execute("context", undefined, { source: "first" });
+    await application.execute("context", undefined, { source: "second" });
+
+    expect(executionIds).toHaveLength(2);
+    expect(executionIds[0]).not.toBe(executionIds[1]);
+    expect(sources).toEqual(["first", "second"]);
+  });
+
   it("throws for unknown tool names", async () => {
     const application = new ForgeApplication([]);
     await application.start();
