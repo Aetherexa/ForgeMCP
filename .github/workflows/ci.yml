@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   validate:
-    name: Build, typecheck, lint, and test
+    name: Build, typecheck, lint, format, and test
     runs-on: ubuntu-latest
 
     steps:
@@ -44,6 +44,9 @@ jobs:
 
       - name: Lint
         run: pnpm lint
+
+      - name: Format
+        run: pnpm format
 
       - name: Test
         run: pnpm test
