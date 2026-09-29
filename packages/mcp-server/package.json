@@ -26,7 +26,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint": "tsc --noEmit --noUnusedLocals --noUnusedParameters",
-    "format": "prettier --check \"src/**/*.ts\" \"package.json\" \"tsconfig.json\" \"tsdown.config.ts\"",
+    "format": "prettier --check \"src/**/*.ts\" \"package.json\" \"tsconfig.json\" \"tsdown.config.ts\" \"vitest.config.ts\"",
     "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
