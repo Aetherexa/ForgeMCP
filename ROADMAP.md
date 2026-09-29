@@ -44,14 +44,22 @@ A developer can:
 
 Goal: expose the kernel through the official MCP TypeScript SDK without coupling core contracts to the SDK.
 
-Planned work:
+### Scope
 
-- MCP server package/adapter;
-- tool registration bridge;
-- protocol request-to-execution-context mapping;
-- tool result mapping;
-- stdio transport;
-- integration tests against the official SDK.
+- [x] MCP server package/adapter
+- [x] protocol-neutral application tool discovery
+- [x] Standard Schema tool input contracts
+- [x] tool registration bridge
+- [x] protocol request-to-execution-context mapping
+- [x] tool result mapping
+- [x] stdio transport
+- [x] integration tests against the official SDK
+- [x] build/typecheck/lint/format/test validation
+- [x] v0.2 release acceptance
+
+### Acceptance
+
+A developer can expose a ForgeMCP application through the official MCP TypeScript SDK, advertise schema-backed tools to an MCP client, execute validated calls through the ForgeMCP middleware pipeline, and serve the same adapter over stdio.
 
 ## v0.3 — Configuration and Dependency Management
 

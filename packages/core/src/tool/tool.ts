@@ -10,7 +10,7 @@ export interface Tool<TInput = unknown, TResult = unknown> {
   /**
    * Tool metadata.
    */
-  readonly metadata: ToolMetadata;
+  readonly metadata: ToolMetadata<TInput>;
 
   /**
    * Executes the tool.

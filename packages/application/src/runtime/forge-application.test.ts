@@ -133,6 +133,37 @@ describe("ForgeApplication module composition", () => {
 });
 
 describe("ForgeApplication tool execution", () => {
+  it("requires the application to be started before listing tools", () => {
+    const application = new ForgeApplication([]);
+
+    expect(() => application.listTools()).toThrow(
+      "Application must be started before accessing tools.",
+    );
+  });
+
+  it("lists metadata for registered tools", async () => {
+    const echoTool: Tool = {
+      metadata: {
+        name: "echo",
+        description: "Returns the supplied input.",
+      },
+      execute(_context, input) {
+        return { value: input };
+      },
+    };
+
+    class EchoModule implements Module {
+      public configure(builder: ModuleBuilder): void {
+        builder.tool(echoTool);
+      }
+    }
+
+    const application = new ForgeApplication([EchoModule]);
+    await application.start();
+
+    expect(application.listTools()).toEqual([echoTool.metadata]);
+  });
+
   it("requires the application to be started", async () => {
     const application = new ForgeApplication([]);
 

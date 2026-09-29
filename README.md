@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.1.0 framework kernel complete. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.2.0 MCP server adapter is complete. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
 
 ## Why ForgeMCP?
 
@@ -59,6 +59,7 @@ The kernel intentionally excludes MCP transports, dependency injection, telemetr
 packages/
   core/          Framework contracts and portable abstractions
   application/   Runtime implementations and application composition
+  mcp-server/    Adapter for the official MCP TypeScript server SDK
 ```
 
 ### Package boundary
@@ -66,6 +67,8 @@ packages/
 `@forgemcp/core` contains contracts. It should remain lightweight and should not depend on application runtime implementations.
 
 `@forgemcp/application` implements those contracts and owns runtime behavior such as application lifecycle, module composition, registries, middleware execution, and tool dispatch.
+
+`@forgemcp/mcp-server` adapts a running ForgeMCP application to the official MCP TypeScript server SDK. The adapter depends on `@forgemcp/core`, while the core package remains independent of MCP SDK packages.
 
 ## Requirements
 
@@ -132,6 +135,45 @@ console.log(result.value);
 
 await app.stop();
 ```
+
+
+## Serve the application over MCP
+
+ForgeMCP tools can declare any input schema implementing Standard Schema and Standard JSON Schema. Zod v4 works directly:
+
+```ts
+import { ForgeApplicationBuilder } from "@forgemcp/application";
+import type { Module, ModuleBuilder } from "@forgemcp/core";
+import { serveForgeMcpStdio } from "@forgemcp/mcp-server/stdio";
+import * as z from "zod/v4";
+
+class EchoModule implements Module {
+  configure(builder: ModuleBuilder): void {
+    builder.tool({
+      metadata: {
+        name: "echo",
+        description: "Echo a message.",
+        inputSchema: z.object({
+          message: z.string(),
+        }),
+      },
+      execute(_context, input) {
+        return { value: input };
+      },
+    });
+  }
+}
+
+serveForgeMcpStdio({
+  name: "echo-server",
+  version: "0.2.0",
+  createApplication: () =>
+    ForgeApplicationBuilder.create().use(EchoModule).build(),
+});
+```
+
+The official MCP SDK owns protocol negotiation and stdio framing. ForgeMCP owns application composition, lifecycle, middleware, execution context, and tool dispatch.
+
 
 ## Design principles
 

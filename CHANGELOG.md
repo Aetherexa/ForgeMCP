@@ -6,6 +6,23 @@ The project follows semantic versioning once public packages begin publishing st
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-29
+
+### Added
+
+- `@forgemcp/mcp-server` adapter for the official MCP TypeScript SDK v2;
+- Standard Schema and Standard JSON Schema support for tool input definitions;
+- protocol-neutral application tool discovery;
+- MCP request-context mapping into ForgeMCP execution attributes;
+- MCP tool-result mapping;
+- stdio serving through the official SDK's `serveStdio`;
+- in-memory integration tests using the official MCP client/server transports.
+
+### Changed
+
+- `Application` now exposes running tool metadata through `listTools()`;
+- `ToolMetadata` is generic by input type and can carry a Standard Schema input contract.
+
 ## [0.1.0] - 2026-09-28
 
 ### Added
