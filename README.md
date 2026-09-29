@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.1.0 framework kernel is complete. v0.2 MCP server integration is under active development. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.2.0 MCP server adapter is complete. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
 
 ## Why ForgeMCP?
 
