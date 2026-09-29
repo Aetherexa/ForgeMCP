@@ -39,6 +39,21 @@ Current responsibilities include:
 
 Runtime code depends on core contracts, never the reverse.
 
+### `@forgemcp/mcp-server`
+
+The MCP server package is a protocol adapter around the application contract.
+
+Its responsibilities are:
+
+- create and start a fresh ForgeMCP application per MCP server instance;
+- discover application tool metadata;
+- register those tools with the official MCP TypeScript SDK;
+- map MCP request context into ForgeMCP execution attributes;
+- map ForgeMCP tool results into MCP tool-call results;
+- provide the stdio serving entry point.
+
+The adapter depends on `@forgemcp/core` and the official MCP server SDK. Core does not depend on MCP packages.
+
 ## Application composition
 
 A ForgeMCP application is assembled from module classes.
@@ -151,19 +166,25 @@ The registry:
 - preserves registration order;
 - supports lookup and required lookup.
 
+## MCP adapter boundary
+
+Tool schemas use the vendor-neutral Standard Schema and Standard JSON Schema contracts. This lets Zod v4, ArkType, and compatible Valibot schemas describe and validate tool inputs without importing the MCP SDK into core.
+
+The MCP adapter consumes those schemas and passes them to the official SDK. Protocol validation therefore happens before ForgeMCP tool execution.
+
 ## Dependency direction
 
 ```text
-@forgemcp/core
-      ^
-      |
-@forgemcp/application
-      ^
-      |
-future adapters / transports / integrations
+                 @forgemcp/core
+                   ^        ^
+                   |        |
+@forgemcp/application   @forgemcp/mcp-server
+                              |
+                              v
+                   @modelcontextprotocol/server
 ```
 
-Protocol adapters, transports, observability, configuration, DI, and plugins should depend inward on the kernel rather than introducing reverse dependencies.
+Future observability, configuration, DI, and plugin packages should continue to depend inward on kernel contracts rather than introducing reverse dependencies.
 
 ## Deliberate v0.1 exclusions
 
