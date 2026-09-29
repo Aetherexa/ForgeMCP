@@ -96,7 +96,14 @@ export class ForgeApplication implements Application {
     input: TInput,
     attributes: Readonly<Dictionary<unknown>> = {},
   ): Promise<ToolResult<TResult>> {
-    const tool = this.requireToolRegistry().require(toolName);
+    if (
+      this.currentState !== LifecycleState.Started ||
+      this.toolRegistry === undefined
+    ) {
+      throw new Error("Application must be started before executing tools.");
+    }
+
+    const tool = this.toolRegistry.require(toolName);
 
     const context: ExecutionContext = {
       execution: {
