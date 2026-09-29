@@ -6,6 +6,16 @@ The project follows semantic versioning once public packages begin publishing st
 
 ## [Unreleased]
 
+### Added
+
+- runtime coverage thresholds and coverage artifacts in CI;
+- regression tests for application isolation, lifecycle cleanup, MCP request metadata, stdio delegation, and result serialization edge cases;
+- package entry-point smoke tests and package tarball validation;
+- CodeQL scanning and dependency-review workflow;
+- Dependabot updates for npm dependencies and GitHub Actions;
+- tag-driven GitHub Release delivery workflow with package-version verification.
+
+
 ## [0.2.0] - 2026-09-29
 
 ### Added
