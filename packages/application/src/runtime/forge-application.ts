@@ -7,6 +7,7 @@ import {
   LifecycleState,
   type Middleware,
   type ModuleType,
+  type ToolMetadata,
   type ToolResult,
 } from "@forgemcp/core";
 
@@ -79,6 +80,15 @@ export class ForgeApplication implements Application {
   }
 
   /**
+   * Returns metadata for tools exposed by the running application.
+   */
+  public listTools(): readonly ToolMetadata[] {
+    return this.requireToolRegistry()
+      .getAll()
+      .map((tool) => tool.metadata);
+  }
+
+  /**
    * Executes a registered tool through the middleware pipeline.
    */
   public async execute<TInput = unknown, TResult = unknown>(
@@ -86,14 +96,7 @@ export class ForgeApplication implements Application {
     input: TInput,
     attributes: Readonly<Dictionary<unknown>> = {},
   ): Promise<ToolResult<TResult>> {
-    if (
-      this.currentState !== LifecycleState.Started ||
-      this.toolRegistry === undefined
-    ) {
-      throw new Error("Application must be started before executing tools.");
-    }
-
-    const tool = this.toolRegistry.require(toolName);
+    const tool = this.requireToolRegistry().require(toolName);
 
     const context: ExecutionContext = {
       execution: {
@@ -147,5 +150,16 @@ export class ForgeApplication implements Application {
       this.currentState = LifecycleState.Started;
       throw error;
     }
+  }
+
+  private requireToolRegistry(): ToolRegistry {
+    if (
+      this.currentState !== LifecycleState.Started ||
+      this.toolRegistry === undefined
+    ) {
+      throw new Error("Application must be started before accessing tools.");
+    }
+
+    return this.toolRegistry;
   }
 }
