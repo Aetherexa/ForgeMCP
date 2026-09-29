@@ -10,7 +10,6 @@ export function createMcpExecutionAttributes(
 ): Readonly<Dictionary<unknown>> {
   const attributes: Dictionary<unknown> = {
     "mcp.requestId": context.mcpReq.id,
-    "mcp.transport": context.http === undefined ? "stdio" : "http",
   };
 
   if (context.sessionId !== undefined) {
