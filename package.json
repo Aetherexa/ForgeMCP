@@ -16,7 +16,8 @@
     "typecheck": "pnpm -r typecheck",
     "format": "pnpm -r format",
     "test:coverage": "pnpm --filter @forgemcp/core test && pnpm --filter @forgemcp/application test:coverage && pnpm --filter @forgemcp/mcp-server test:coverage",
-    "release:verify": "node scripts/verify-release.mjs"
+    "release:verify": "node scripts/verify-release.mjs",
+    "package:smoke": "node scripts/package-smoke.mjs"
   },
   "devDependencies": {
     "tsdown": "^0.22.4"
