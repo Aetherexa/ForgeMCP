@@ -6,6 +6,8 @@ The project follows semantic versioning once public packages begin publishing st
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-09-29
+
 ### Added
 
 - `@forgemcp/mcp-server` adapter for the official MCP TypeScript SDK v2;
