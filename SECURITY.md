@@ -35,3 +35,14 @@ Security-sensitive areas may include:
 - logging or telemetry that may expose sensitive data.
 
 Security APIs are not considered stable until explicitly documented as such.
+
+
+## Automated security checks
+
+The repository uses automated checks on the default branch and pull requests:
+
+- GitHub CodeQL analysis for JavaScript and TypeScript;
+- dependency review for newly introduced vulnerable dependencies;
+- Dependabot update pull requests for npm dependencies and GitHub Actions.
+
+Automated scanning supplements, but does not replace, private vulnerability reporting.
