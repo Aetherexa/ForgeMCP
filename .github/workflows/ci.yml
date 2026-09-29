@@ -52,6 +52,14 @@ jobs:
       - name: Smoke test package entry points
         run: pnpm package:smoke
 
+      - name: Pack publishable packages
+        run: |
+          mkdir -p release
+          pnpm --dir packages/core pack --pack-destination ../../release
+          pnpm --dir packages/application pack --pack-destination ../../release
+          pnpm --dir packages/mcp-server pack --pack-destination ../../release
+          test "$(find release -maxdepth 1 -name '*.tgz' | wc -l)" -eq 3
+
       - name: Typecheck
         run: pnpm typecheck
 
