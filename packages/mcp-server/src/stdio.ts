@@ -1,4 +1,7 @@
-import { serveStdio, type StdioServerHandle } from "@modelcontextprotocol/server/stdio";
+import {
+  serveStdio,
+  type StdioServerHandle,
+} from "@modelcontextprotocol/server/stdio";
 
 import { createForgeMcpServer } from "./create-forge-mcp-server.js";
 import type { ForgeMcpServerOptions } from "./options.js";
