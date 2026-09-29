@@ -3,14 +3,8 @@ import {
   type CallToolResult,
 } from "@modelcontextprotocol/server";
 import { Client } from "@modelcontextprotocol/client";
-import {
-  ForgeApplicationBuilder,
-} from "@forgemcp/application";
-import type {
-  Module,
-  ModuleBuilder,
-  Tool,
-} from "@forgemcp/core";
+import { ForgeApplicationBuilder } from "@forgemcp/application";
+import type { Module, ModuleBuilder, Tool } from "@forgemcp/core";
 import { describe, expect, it } from "vitest";
 import * as z from "zod/v4";
 
