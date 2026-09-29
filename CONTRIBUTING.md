@@ -36,10 +36,17 @@ Before requesting review:
 
 ```bash
 pnpm build
+pnpm package:smoke
 pnpm typecheck
 pnpm lint
-pnpm test
+pnpm format
+pnpm test:coverage
+pnpm release:verify
 ```
+
+Runtime packages must maintain at least 90% coverage for statements, branches, functions, and lines. New behavior should include regression tests for success paths, failure paths, and lifecycle cleanup where applicable.
+
+Pull requests also run dependency review and CodeQL analysis.
 
 ## Architecture rules
 

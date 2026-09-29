@@ -21,6 +21,29 @@ describe("toMcpToolResult", () => {
     });
   });
 
+  it("serializes primitive non-string values", () => {
+    expect(toMcpToolResult({ value: 42 })).toEqual({
+      content: [{ type: "text", text: "42" }],
+    });
+    expect(toMcpToolResult({ value: null })).toEqual({
+      content: [{ type: "text", text: "null" }],
+    });
+  });
+
+  it("falls back to String when JSON serialization returns undefined", () => {
+    const value = Symbol("forge");
+
+    expect(toMcpToolResult({ value })).toEqual({
+      content: [{ type: "text", text: "Symbol(forge)" }],
+    });
+  });
+
+  it("falls back to String when JSON serialization throws", () => {
+    expect(toMcpToolResult({ value: 1n })).toEqual({
+      content: [{ type: "text", text: "1" }],
+    });
+  });
+
   it("returns empty content for undefined values", () => {
     expect(toMcpToolResult({ value: undefined })).toEqual({
       content: [],

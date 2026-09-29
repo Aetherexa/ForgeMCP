@@ -92,8 +92,33 @@ Validate the workspace:
 pnpm build
 pnpm typecheck
 pnpm lint
-pnpm test
+pnpm format
+pnpm test:coverage
+pnpm package:smoke
 ```
+
+## Quality gates
+
+Every pull request to `main` is expected to pass the same automated gates used for releases:
+
+- frozen-lockfile install;
+- release/version consistency checks;
+- build and package-entry smoke tests;
+- package tarball generation;
+- strict TypeScript checks;
+- static lint checks;
+- formatting checks;
+- unit and integration tests;
+- 90% minimum statements, branches, functions, and lines for runtime packages;
+- dependency review and CodeQL security scanning.
+
+Coverage reports are retained as GitHub Actions artifacts for 14 days.
+
+## Release delivery
+
+Pushing a version tag such as `v0.3.0` runs the release pipeline. The tag must match the workspace package version. The pipeline re-runs all quality gates, packs the three public packages, and creates or updates a GitHub Release with the generated tarballs.
+
+npm publishing is intentionally not automated yet. It should be enabled only after the `@forgemcp` npm namespace and trusted publishing configuration are owned by the project.
 
 ## Minimal application
 

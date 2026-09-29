@@ -5,6 +5,9 @@ on:
     branches:
       - main
       - "feat/**"
+      - "fix/**"
+      - "chore/**"
+      - "test/**"
   pull_request:
     branches:
       - main
@@ -18,9 +21,9 @@ concurrency:
 
 jobs:
   validate:
-    name: Build, typecheck, lint, format, and test
+    name: Quality gates
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
 
     steps:
       - name: Checkout
@@ -40,8 +43,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
+      - name: Verify release metadata
+        run: pnpm release:verify
+
       - name: Build
         run: pnpm build
+
+      - name: Smoke test package entry points
+        run: pnpm package:smoke
+
+      - name: Pack publishable packages
+        run: |
+          mkdir -p release
+          pnpm --dir packages/core pack --pack-destination ../../release
+          pnpm --dir packages/application pack --pack-destination ../../release
+          pnpm --dir packages/mcp-server pack --pack-destination ../../release
+          test "$(find release -maxdepth 1 -name '*.tgz' | wc -l)" -eq 3
 
       - name: Typecheck
         run: pnpm typecheck
@@ -52,5 +69,16 @@ jobs:
       - name: Format
         run: pnpm format
 
-      - name: Test
-        run: pnpm test
+      - name: Test with coverage thresholds
+        run: pnpm test:coverage
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-${{ github.sha }}
+          path: |
+            packages/application/coverage/**
+            packages/mcp-server/coverage/**
+          if-no-files-found: warn
+          retention-days: 14
