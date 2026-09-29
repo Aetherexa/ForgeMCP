@@ -55,7 +55,7 @@ Goal: expose the kernel through the official MCP TypeScript SDK without coupling
 - [x] stdio transport
 - [x] integration tests against the official SDK
 - [x] build/typecheck/lint/format/test validation
-- [ ] v0.2 release acceptance
+- [x] v0.2 release acceptance
 
 ### Acceptance
 
