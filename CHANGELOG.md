@@ -13,7 +13,8 @@ The project follows semantic versioning once public packages begin publishing st
 - package entry-point smoke tests and package tarball validation;
 - CodeQL scanning and dependency-review workflow;
 - Dependabot updates for npm dependencies and GitHub Actions;
-- tag-driven GitHub Release delivery workflow with package-version verification.
+- tag-driven GitHub Release delivery workflow with package-version verification;
+- SonarQube Cloud scan configuration with LCOV ingestion and blocking Quality Gate support.
 
 
 ## [0.2.0] - 2026-09-29

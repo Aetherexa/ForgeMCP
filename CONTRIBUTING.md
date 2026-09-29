@@ -46,7 +46,7 @@ pnpm release:verify
 
 Runtime packages must maintain at least 90% coverage for statements, branches, functions, and lines. New behavior should include regression tests for success paths, failure paths, and lifecycle cleanup where applicable.
 
-Pull requests also run dependency review and CodeQL analysis.
+Pull requests also run dependency security checks, CodeQL analysis, and—when repository Sonar credentials are available—SonarQube Cloud analysis with a blocking Quality Gate.
 
 ## Architecture rules
 
