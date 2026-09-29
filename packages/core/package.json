@@ -1,6 +1,6 @@
 {
   "name": "@forgemcp/core",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Core contracts and abstractions for ForgeMCP.",
   "type": "module",
   "license": "MIT",
@@ -23,6 +23,9 @@
     "test": "vitest run --passWithNoTests",
     "lint": "tsc --noEmit --noUnusedLocals --noUnusedParameters",
     "format": "prettier --check \"src/**/*.ts\" \"package.json\" \"tsconfig.json\" \"tsdown.config.ts\""
+  },
+  "dependencies": {
+    "@standard-schema/spec": "^1.1.0"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
