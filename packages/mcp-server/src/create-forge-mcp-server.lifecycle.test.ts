@@ -11,7 +11,7 @@ import { describe, expect, it } from "vitest";
 import { createForgeMcpServer } from "./create-forge-mcp-server.js";
 
 class TestApplication implements Application {
-  public state = LifecycleState.Created;
+  public state: LifecycleState = LifecycleState.Created;
   public starts = 0;
   public stops = 0;
   public failDiscovery = false;
