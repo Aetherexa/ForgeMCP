@@ -9,10 +9,18 @@ updates:
       timezone: "UTC"
     open-pull-requests-limit: 10
     groups:
-      runtime-dependencies:
+      runtime-minor-and-patch:
+        applies-to: version-updates
         dependency-type: production
-      development-dependencies:
+        update-types:
+          - minor
+          - patch
+      development-minor-and-patch:
+        applies-to: version-updates
         dependency-type: development
+        update-types:
+          - minor
+          - patch
 
   - package-ecosystem: github-actions
     directory: "/"
