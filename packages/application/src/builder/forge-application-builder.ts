@@ -68,9 +68,8 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
    * Builds the application.
    */
   public build(): Application {
-    return new ForgeApplication(
-      this.modules.getAll(),
-      [...this.configurationSources],
-    );
+    return new ForgeApplication(this.modules.getAll(), [
+      ...this.configurationSources,
+    ]);
   }
 }
