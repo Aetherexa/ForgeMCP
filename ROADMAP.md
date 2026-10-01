@@ -67,7 +67,7 @@ Goal: support non-trivial applications without service-locator or global-state p
 
 ### Sprint 1 — Configuration Foundation
 
-Status: implementation complete; release validation in progress.
+Status: complete.
 
 Plan: [docs/planning/v0.3-sprint-1.md](./docs/planning/v0.3-sprint-1.md)
 
