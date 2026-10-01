@@ -2,6 +2,7 @@ import { randomUUID } from "node:crypto";
 
 import {
   type Application,
+  type ConfigurationSource,
   type Dictionary,
   type ExecutionContext,
   LifecycleState,
@@ -12,6 +13,7 @@ import {
 } from "@forgemcp/core";
 
 import { ForgeModuleBuilder } from "../builder/forge-module-builder.js";
+import { resolveConfiguration } from "../configuration/configuration-resolver.js";
 import { ToolRegistry } from "../registry/tool-registry.js";
 import { ForgeMiddlewarePipeline } from "./forge-middleware-pipeline.js";
 
@@ -26,7 +28,10 @@ export class ForgeApplication implements Application {
   /**
    * Creates a new Forge application.
    */
-  public constructor(private readonly modules: readonly ModuleType[]) {}
+  public constructor(
+    private readonly modules: readonly ModuleType[],
+    private readonly configurationSources: readonly ConfigurationSource[] = [],
+  ) {}
 
   /**
    * Current lifecycle state.
@@ -55,7 +60,10 @@ export class ForgeApplication implements Application {
     this.currentState = LifecycleState.Starting;
 
     try {
-      const moduleBuilder = new ForgeModuleBuilder();
+      const configuration = await resolveConfiguration(
+        this.configurationSources,
+      );
+      const moduleBuilder = new ForgeModuleBuilder(configuration);
 
       for (const Module of this.modules) {
         const module = new Module();

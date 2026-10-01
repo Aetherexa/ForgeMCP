@@ -1,9 +1,12 @@
 import type {
   Application,
   ApplicationBuilder,
+  ConfigurationSource,
+  ConfigurationValues,
   ModuleType,
 } from "@forgemcp/core";
 
+import { StaticConfigurationSource } from "../configuration/static-configuration-source.js";
 import { ModuleRegistry } from "../registry/module-registry.js";
 import { ForgeApplication } from "../runtime/forge-application.js";
 
@@ -12,6 +15,7 @@ import { ForgeApplication } from "../runtime/forge-application.js";
  */
 export class ForgeApplicationBuilder implements ApplicationBuilder {
   private readonly modules = new ModuleRegistry();
+  private readonly configurationSources: ConfigurationSource[] = [];
 
   /**
    * Prevent direct instantiation.
@@ -39,9 +43,33 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
   }
 
   /**
+   * Adds explicit configuration values.
+   *
+   * Values are captured when they are registered so later caller mutation
+   * cannot change application startup behavior.
+   */
+  public configure(values: ConfigurationValues): this {
+    this.configurationSources.push(new StaticConfigurationSource(values));
+    return this;
+  }
+
+  /**
+   * Adds a configuration source.
+   *
+   * Sources are resolved in registration order. Later sources override
+   * earlier sources.
+   */
+  public configureFrom(source: ConfigurationSource): this {
+    this.configurationSources.push(source);
+    return this;
+  }
+
+  /**
    * Builds the application.
    */
   public build(): Application {
-    return new ForgeApplication(this.modules.getAll());
+    return new ForgeApplication(this.modules.getAll(), [
+      ...this.configurationSources,
+    ]);
   }
 }

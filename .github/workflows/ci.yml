@@ -87,7 +87,7 @@ jobs:
   sonar:
     name: SonarQube Cloud
     needs: validate
-    if: ${{ needs.validate.result == 'success' }}
+    if: ${{ needs.validate.result == 'success' && (github.event_name == 'pull_request' || github.ref == 'refs/heads/main') }}
     runs-on: ubuntu-latest
     timeout-minutes: 10
     env:
@@ -119,3 +119,13 @@ jobs:
           args: >
             -Dsonar.projectKey=${{ vars.SONAR_PROJECT_KEY }}
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
+
+      - name: SonarQube failure diagnostics
+        if: ${{ failure() && env.SONAR_TOKEN != '' && env.SONAR_PROJECT_KEY != '' && github.event_name == 'pull_request' }}
+        env:
+          SONAR_PULL_REQUEST: ${{ github.event.pull_request.number }}
+        run: |
+          echo "Quality Gate conditions:"
+          curl --silent --fail --user "$SONAR_TOKEN:" --get             --data-urlencode "projectKey=$SONAR_PROJECT_KEY"             --data-urlencode "pullRequest=$SONAR_PULL_REQUEST"             "https://sonarcloud.io/api/qualitygates/project_status" | jq .
+          echo "Open Sonar issues:"
+          curl --silent --fail --user "$SONAR_TOKEN:" --get             --data-urlencode "componentKeys=$SONAR_PROJECT_KEY"             --data-urlencode "pullRequest=$SONAR_PULL_REQUEST"             --data-urlencode "resolved=false"             --data-urlencode "ps=100"             "https://sonarcloud.io/api/issues/search"             | jq '{total, issues: [.issues[] | {rule, severity, type, message, component, line}]}'
