@@ -9,7 +9,9 @@ export class ConfigurationKeyNotFoundError extends Error {
   public constructor(key: string) {
     const normalizedKey = normalizeConfigurationKey(key);
 
-    super(`Configuration key '${normalizedKey}' is required but was not provided.`);
+    super(
+      `Configuration key '${normalizedKey}' is required but was not provided.`,
+    );
 
     this.name = "ConfigurationKeyNotFoundError";
     this.key = normalizedKey;
