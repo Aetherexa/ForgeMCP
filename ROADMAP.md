@@ -65,14 +65,32 @@ A developer can expose a ForgeMCP application through the official MCP TypeScrip
 
 Goal: support non-trivial applications without service-locator or global-state patterns.
 
-Planned work:
+### Sprint 1 — Configuration Foundation
 
-- configuration abstraction;
+Status: ready to start.
+
+Plan: [docs/planning/v0.3-sprint-1.md](./docs/planning/v0.3-sprint-1.md)
+
+Backlog: issues #6–#10, tracked by sprint issue #11.
+
+Sprint 1 establishes:
+
+- configuration contracts;
+- deterministic source composition;
 - environment-backed configuration;
+- configuration access during module composition;
+- tests, documentation, and an end-to-end example.
+
+### Later v0.3 work
+
+After the configuration slice is complete:
+
 - service registration;
-- dependency scopes;
+- dependency lifetimes and scopes;
 - module dependencies;
 - lifecycle-aware services.
+
+Dependency management will be introduced incrementally after a concrete configuration use case proves the required construction/resolution model.
 
 ## v0.4 — Production Operations
 
