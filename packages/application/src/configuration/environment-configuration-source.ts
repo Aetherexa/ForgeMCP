@@ -42,9 +42,7 @@ export class EnvironmentConfigurationSource implements ConfigurationSource {
     const separator = options.separator ?? "__";
 
     if (separator.length === 0) {
-      throw new Error(
-        "Environment configuration separator must not be empty.",
-      );
+      throw new Error("Environment configuration separator must not be empty.");
     }
 
     this.prefix = options.prefix;
