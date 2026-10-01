@@ -15,6 +15,7 @@ The core package contains framework contracts and portable abstractions.
 Current areas include:
 
 - application contracts;
+- configuration contracts;
 - execution context;
 - lifecycle;
 - modules;
@@ -32,6 +33,8 @@ Current responsibilities include:
 
 - `ForgeApplicationBuilder`;
 - `ForgeApplication`;
+- resolved immutable configuration;
+- explicit and environment-backed configuration sources;
 - `ModuleRegistry`;
 - `ToolRegistry`;
 - `ForgeModuleBuilder`;
@@ -81,6 +84,37 @@ Module.configure(ModuleBuilder)
 ```
 
 The builder collects module contributions. Tool names are required to be unique inside one application.
+
+## Configuration
+
+Configuration is resolved as part of application startup, before any module is configured.
+
+```text
+ForgeApplicationBuilder
+        |
+        +--> configure(values)
+        +--> configureFrom(source)
+        |
+        v
+configuration sources
+        |
+        | registration order
+        | later values override earlier values
+        v
+resolved immutable Configuration
+        |
+        v
+ModuleBuilder.configuration
+        |
+        v
+Module.configure(...)
+```
+
+Configuration keys are canonical lowercase dot-separated paths. Environment-backed configuration is opt-in and prefix-scoped. For example, `MYAPP_DATABASE__URL` with prefix `MYAPP_` becomes `database.url`.
+
+A configuration-source failure is a startup failure. The application returns to `Created`, preserving the same retry behavior as module-composition failures.
+
+The core package defines configuration contracts but does not read Node process state. `EnvironmentConfigurationSource` lives in `@forgemcp/application`.
 
 ## Lifecycle
 
@@ -184,7 +218,7 @@ The MCP adapter consumes those schemas and passes them to the official SDK. Prot
                    @modelcontextprotocol/server
 ```
 
-Future observability, configuration, DI, and plugin packages should continue to depend inward on kernel contracts rather than introducing reverse dependencies.
+Future observability, dependency-management, and plugin packages should continue to depend inward on kernel contracts rather than introducing reverse dependencies.
 
 ## Deliberate v0.1 exclusions
 
@@ -193,7 +227,6 @@ The framework kernel does not yet include:
 - MCP SDK binding;
 - stdio or HTTP transports;
 - dependency injection;
-- configuration providers;
 - structured logging;
 - telemetry and metrics;
 - authentication or authorization;
