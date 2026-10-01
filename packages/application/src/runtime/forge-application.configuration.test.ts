@@ -1,7 +1,4 @@
-import {
-  type ConfigurationSource,
-  LifecycleState,
-} from "@forgemcp/core";
+import { type ConfigurationSource, LifecycleState } from "@forgemcp/core";
 import { describe, expect, it } from "vitest";
 
 import { ForgeApplication } from "./forge-application.js";
