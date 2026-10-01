@@ -81,16 +81,33 @@ Sprint 1 establishes:
 - [x] configuration access during module composition;
 - [x] tests, documentation, and an end-to-end MCP example.
 
+### Sprint 2 — Service Registration Foundation
+
+Status: ready to start.
+
+Plan: [docs/planning/v0.3-sprint-2.md](./docs/planning/v0.3-sprint-2.md)
+
+Backlog: issues #22–#26, tracked by sprint issue #21.
+
+Sprint 2 will establish:
+
+- typed service tokens;
+- explicit application service registration;
+- deterministic singleton-style application service resolution;
+- configuration-aware service factories;
+- duplicate, missing, and circular dependency diagnostics;
+- service access during module composition;
+- an end-to-end configuration → service → module → MCP example.
+
 ### Later v0.3 work
 
-After the configuration slice is complete:
+After the service-registration slice is complete:
 
-- service registration;
 - dependency lifetimes and scopes;
 - module dependencies;
 - lifecycle-aware services.
 
-Dependency management will be introduced incrementally after a concrete configuration use case proves the required construction/resolution model.
+Dependency management continues incrementally. Request scopes, transient lifetimes, disposal graphs, automatic constructor injection, decorators, and reflection metadata remain deferred until the simpler service-registration model is proven.
 
 ## v0.4 — Production Operations
 
