@@ -8,6 +8,12 @@ The project follows semantic versioning once public packages begin publishing st
 
 ### Added
 
+- protocol-neutral configuration contracts with canonical key semantics;
+- deterministic configuration-source composition with later-source precedence;
+- immutable runtime configuration and required-value errors;
+- prefix-scoped environment-backed configuration;
+- module access to resolved configuration through `ModuleBuilder.configuration`;
+- end-to-end configuration coverage through the MCP adapter;
 - runtime coverage thresholds and coverage artifacts in CI;
 - regression tests for application isolation, lifecycle cleanup, MCP request metadata, stdio delegation, and result serialization edge cases;
 - package entry-point smoke tests and package tarball validation;
