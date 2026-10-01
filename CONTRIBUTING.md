@@ -48,6 +48,14 @@ Runtime packages must maintain at least 90% coverage for statements, branches, f
 
 Pull requests also run dependency security checks, CodeQL analysis, and—when repository Sonar credentials are available—SonarQube Cloud analysis with a blocking Quality Gate.
 
+## Dependency update policy
+
+Dependabot groups routine minor and patch updates, but major version upgrades are intentionally raised as separate pull requests.
+
+Major upgrades must not be merged as a bundle. Each major toolchain/runtime change should be reviewed independently, including migration notes and the complete CI/security/Sonar result, before it reaches `main`.
+
+Do not merge a dependency pull request while its latest base/head validation is missing, stale, or failing.
+
 ## Architecture rules
 
 - `@forgemcp/core` contains contracts and portable abstractions.
