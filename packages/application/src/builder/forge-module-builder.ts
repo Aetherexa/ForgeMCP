@@ -1,5 +1,11 @@
-import type { Middleware, ModuleBuilder, Tool } from "@forgemcp/core";
+import type {
+  Configuration,
+  Middleware,
+  ModuleBuilder,
+  Tool,
+} from "@forgemcp/core";
 
+import { ForgeConfiguration } from "../configuration/forge-configuration.js";
 import { ToolRegistry } from "../registry/tool-registry.js";
 
 /**
@@ -8,6 +14,10 @@ import { ToolRegistry } from "../registry/tool-registry.js";
 export class ForgeModuleBuilder implements ModuleBuilder {
   private readonly tools = new ToolRegistry();
   private readonly registeredMiddleware: Middleware[] = [];
+
+  public constructor(
+    public readonly configuration: Configuration = new ForgeConfiguration(),
+  ) {}
 
   /**
    * Registers a tool contribution.
