@@ -1,7 +1,4 @@
-import type {
-  ConfigurationSource,
-  ConfigurationValues,
-} from "@forgemcp/core";
+import type { ConfigurationSource, ConfigurationValues } from "@forgemcp/core";
 
 /**
  * Configuration source backed by explicit in-memory values.
