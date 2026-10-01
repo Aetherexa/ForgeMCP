@@ -10,9 +10,7 @@ describe("ForgeConfiguration", () => {
     });
 
     expect(configuration.get("database.url")).toBe("postgres://localhost");
-    expect(configuration.get(" DATABASE.URL ")).toBe(
-      "postgres://localhost",
-    );
+    expect(configuration.get(" DATABASE.URL ")).toBe("postgres://localhost");
     expect(configuration.has("database.url")).toBe(true);
   });
 
