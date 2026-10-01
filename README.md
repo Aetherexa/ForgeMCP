@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.2.0 MCP server adapter is complete. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.2.0 MCP server adapter is complete and v0.3 configuration work is underway. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
 
 ## Why ForgeMCP?
 
@@ -174,6 +174,49 @@ console.log(result.value);
 await app.stop();
 ```
 
+
+## Application configuration
+
+ForgeMCP resolves application configuration before module composition. Explicit values can be layered with environment-backed values, and later sources override earlier sources.
+
+```ts
+import {
+  EnvironmentConfigurationSource,
+  ForgeApplicationBuilder,
+} from "@forgemcp/application";
+import type { Module, ModuleBuilder } from "@forgemcp/core";
+
+class ApiModule implements Module {
+  configure(builder: ModuleBuilder): void {
+    const endpoint = builder.configuration.require("api.endpoint");
+
+    builder.tool({
+      metadata: { name: "api-endpoint" },
+      execute() {
+        return { value: endpoint };
+      },
+    });
+  }
+}
+
+const app = ForgeApplicationBuilder.create()
+  .configure({
+    "api.endpoint": "https://default.example",
+  })
+  .configureFrom(
+    new EnvironmentConfigurationSource({
+      prefix: "MYAPP_",
+    }),
+  )
+  .use(ApiModule)
+  .build();
+
+await app.start();
+```
+
+With prefix `MYAPP_`, environment variable `MYAPP_API__ENDPOINT` maps to `api.endpoint`.
+
+Modules consume the resolved immutable configuration through `ModuleBuilder.configuration`; they do not need to read `process.env` directly.
 
 ## Serve the application over MCP
 
