@@ -54,7 +54,9 @@ export class EnvironmentConfigurationSource implements ConfigurationSource {
     const values: Record<string, string> = {};
     const normalizedKeys = new Set<string>();
 
-    for (const name of Object.keys(this.environment).sort()) {
+    for (const name of Object.keys(this.environment).sort((left, right) =>
+      left.localeCompare(right),
+    )) {
       if (!name.startsWith(this.prefix)) {
         continue;
       }
