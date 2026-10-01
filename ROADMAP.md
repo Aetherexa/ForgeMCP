@@ -67,7 +67,7 @@ Goal: support non-trivial applications without service-locator or global-state p
 
 ### Sprint 1 — Configuration Foundation
 
-Status: ready to start.
+Status: implementation complete; release validation in progress.
 
 Plan: [docs/planning/v0.3-sprint-1.md](./docs/planning/v0.3-sprint-1.md)
 
@@ -75,11 +75,11 @@ Backlog: issues #6–#10, tracked by sprint issue #11.
 
 Sprint 1 establishes:
 
-- configuration contracts;
-- deterministic source composition;
-- environment-backed configuration;
-- configuration access during module composition;
-- tests, documentation, and an end-to-end example.
+- [x] configuration contracts;
+- [x] deterministic source composition;
+- [x] environment-backed configuration;
+- [x] configuration access during module composition;
+- [x] tests, documentation, and an end-to-end MCP example.
 
 ### Later v0.3 work
 
