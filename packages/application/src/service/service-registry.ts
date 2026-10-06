@@ -56,13 +56,8 @@ export class ServiceRegistry {
     return [...this.registrations.values()];
   }
 
-  public async resolve(
-    configuration: Configuration,
-  ): Promise<ServiceProvider> {
-    const engine = new ServiceResolutionEngine(
-      this.getAll(),
-      configuration,
-    );
+  public async resolve(configuration: Configuration): Promise<ServiceProvider> {
+    const engine = new ServiceResolutionEngine(this.getAll(), configuration);
 
     return engine.resolveAll();
   }
@@ -135,9 +130,7 @@ class ServiceResolutionEngine {
     token: ServiceToken<TService>,
     path: readonly ServiceToken<unknown>[],
   ): Promise<TService> {
-    const cycleStart = path.findIndex(
-      (current) => current.id === token.id,
-    );
+    const cycleStart = path.findIndex((current) => current.id === token.id);
 
     if (cycleStart >= 0) {
       throw new CircularServiceDependencyError([
@@ -162,10 +155,7 @@ class ServiceResolutionEngine {
       throw new ServiceNotFoundError(token);
     }
 
-    const nextPath = [
-      ...path,
-      token as ServiceToken<unknown>,
-    ] as const;
+    const nextPath = [...path, token as ServiceToken<unknown>] as const;
 
     const construction = this.construct(registration, nextPath);
     this.inFlight.set(token.id, construction);
