@@ -29,7 +29,7 @@ class FeatureModule implements Module {
 }
 ```
 
-The core `ModuleType` contract will expose the optional dependency metadata in a typed form.
+The core `ModuleType` contract exposes the optional dependency metadata in a typed form.
 
 Dependencies are identified by module constructor identity. Class names are diagnostic metadata, not graph keys.
 
