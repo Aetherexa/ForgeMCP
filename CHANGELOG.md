@@ -22,6 +22,13 @@ The project follows semantic versioning once public packages begin publishing st
 - resolved service access through `ModuleBuilder.services`;
 - lifecycle rollback and retry behavior for failed service construction;
 - end-to-end configuration → service → module → MCP integration coverage;
+- explicit application, execution-scoped, and transient service lifetimes;
+- execution-scoped and transient factory registration on `ForgeApplicationBuilder`;
+- one isolated service scope per `Application.execute()` invocation;
+- request-local service resolution through `ExecutionContext.services`;
+- deterministic captive-dependency diagnostics for invalid application-to-shorter-lived dependencies;
+- sequential and concurrent execution-scope isolation;
+- end-to-end lifetime validation through the official MCP client/server path;
 - runtime coverage thresholds and coverage artifacts in CI;
 - regression tests for application isolation, lifecycle cleanup, MCP request metadata, stdio delegation, and result serialization edge cases;
 - package entry-point smoke tests and package tarball validation;
