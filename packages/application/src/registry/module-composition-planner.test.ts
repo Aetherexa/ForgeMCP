@@ -161,10 +161,6 @@ describe("planModuleComposition", () => {
       public configure(_builder: ModuleBuilder): void {}
     }
 
-    expect(() =>
-      planModuleComposition([FirstModule, SecondModule, ThirdModule]),
-    ).toMatchObject;
-
     try {
       planModuleComposition([FirstModule, SecondModule, ThirdModule]);
     } catch (error) {
