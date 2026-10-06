@@ -29,6 +29,12 @@ The project follows semantic versioning once public packages begin publishing st
 - deterministic captive-dependency diagnostics for invalid application-to-shorter-lived dependencies;
 - sequential and concurrent execution-scope isolation;
 - end-to-end lifetime validation through the official MCP client/server path;
+- explicit static module dependency metadata through `ModuleType.dependencies`;
+- deterministic dependency-first module composition with stable ordering for independent modules;
+- missing and circular module dependency diagnostics before partial application composition;
+- exactly-once module configuration for shared diamond dependencies;
+- module graph validation before configuration resolution, service construction, and module configuration;
+- end-to-end module dependency validation through the official MCP client/server path;
 - runtime coverage thresholds and coverage artifacts in CI;
 - regression tests for application isolation, lifecycle cleanup, MCP request metadata, stdio delegation, and result serialization edge cases;
 - package entry-point smoke tests and package tarball validation;
