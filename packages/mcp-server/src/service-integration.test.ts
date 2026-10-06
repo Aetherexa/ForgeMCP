@@ -30,8 +30,7 @@ describe("ForgeMCP service integration", () => {
 
     class GreetingModule implements Module {
       public configure(builder: ModuleBuilder): void {
-        const greetingService =
-          builder.services.require(greetingServiceToken);
+        const greetingService = builder.services.require(greetingServiceToken);
 
         builder.tool({
           metadata: {
@@ -54,9 +53,7 @@ describe("ForgeMCP service integration", () => {
       .provideFactory(greetingServiceToken, ({ configuration }) => {
         constructions += 1;
 
-        return new GreetingService(
-          configuration.require("greeting.prefix"),
-        );
+        return new GreetingService(configuration.require("greeting.prefix"));
       })
       .use(GreetingModule)
       .build();
