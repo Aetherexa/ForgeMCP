@@ -117,14 +117,30 @@ Sprint 3 establishes:
 - [x] concurrency isolation;
 - [x] end-to-end MCP validation.
 
+### Sprint 4 — Module Dependencies and Deterministic Composition
+
+Status: planned.
+
+Plan: [docs/planning/v0.3-sprint-4.md](./docs/planning/v0.3-sprint-4.md)
+
+Backlog: issues #47–#51, tracked by sprint issue #46.
+
+Sprint 4 establishes:
+
+- [ ] explicit static module dependency metadata;
+- [ ] explicit selection with no hidden auto-registration;
+- [ ] stable dependency-first module ordering;
+- [ ] deterministic missing and circular dependency diagnostics;
+- [ ] startup integration without partial module composition;
+- [ ] end-to-end MCP validation.
+
 ### Later v0.3 work
 
-After the dependency-lifetime slice is complete:
+After the module-dependency slice is complete:
 
-- module dependencies;
 - lifecycle-aware services.
 
-Dependency management continues incrementally. Module dependency graphs and lifecycle-aware disposal remain later v0.3 work. Session/connection scopes, user-created child scopes, automatic constructor injection, decorators, and reflection metadata remain deliberately deferred.
+Dependency management continues incrementally. Lifecycle-aware disposal remains later v0.3 work. Session/connection scopes, user-created child scopes, optional/conditional module dependencies, automatic constructor injection, decorators, and reflection metadata remain deliberately deferred.
 
 ## v0.4 — Production Operations
 
