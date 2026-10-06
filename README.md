@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.3 Sprint 2 service-registration foundation is complete. Configuration and explicit application services now work end to end through the MCP adapter. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.3 Sprint 3 dependency lifetimes and execution scopes are complete. ForgeMCP supports application, execution-scoped, and transient services end to end through the official MCP adapter. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
 
 ## Why ForgeMCP?
 
@@ -268,7 +268,68 @@ Use `provide(token, value)` for an existing service instance and `provideFactory
 
 Factories can resolve other registered services asynchronously. The runtime constructs each service at most once per successful application start, rejects duplicate registrations, reports missing dependencies, and detects circular dependency paths.
 
-Modules receive the fully resolved read-only provider through `ModuleBuilder.services`. Tools and middleware should receive dependencies explicitly through normal construction or closures rather than performing ambient service lookup during execution.
+Modules receive application-lifetime services through the synchronous read-only `ModuleBuilder.services` provider. Shorter-lived services are resolved explicitly from the request-local `ExecutionContext.services` resolver during execution.
+
+## Service lifetimes and execution scopes
+
+ForgeMCP supports three explicit service lifetimes:
+
+- **application** — one instance per successful application start;
+- **execution** — one instance per service token for one `Application.execute()` call;
+- **transient** — a new instance for every resolution request inside an execution scope.
+
+Existing `provide(...)` and `provideFactory(...)` registrations remain application-lifetime. Use `provideScopedFactory(...)` for execution-scoped services and `provideTransientFactory(...)` for transient services.
+
+```ts
+import { ForgeApplicationBuilder } from "@forgemcp/application";
+import {
+  createServiceToken,
+  type Module,
+  type ModuleBuilder,
+} from "@forgemcp/core";
+
+const requestState = createServiceToken<{ id: string }>("requestState");
+const formatter = createServiceToken<{ format(value: string): string }>(
+  "formatter",
+);
+
+class ScopedModule implements Module {
+  configure(builder: ModuleBuilder): void {
+    builder.tool({
+      metadata: { name: "scope-demo" },
+      async execute(context, input) {
+        const state = await context.services.require(requestState);
+        const firstFormatter = await context.services.require(formatter);
+        const secondFormatter = await context.services.require(formatter);
+
+        return {
+          value: {
+            requestId: state.id,
+            formatted: firstFormatter.format(String(input)),
+            transientIsFresh: firstFormatter !== secondFormatter,
+          },
+        };
+      },
+    });
+  }
+}
+
+const app = ForgeApplicationBuilder.create()
+  .provideScopedFactory(requestState, ({ configuration }) => ({
+    id: configuration.get("request.defaultId") ?? crypto.randomUUID(),
+  }))
+  .provideTransientFactory(formatter, () => ({
+    format: (value) => value.trim(),
+  }))
+  .use(ScopedModule)
+  .build();
+```
+
+One `Application.execute()` invocation owns one execution scope. Middleware and the target tool share that scope; sequential or concurrent executions do not. MCP tool calls inherit the same boundary because the official adapter delegates every call to `Application.execute()`.
+
+Application-lifetime services may depend only on other application-lifetime services. An application service that attempts to capture an execution-scoped or transient dependency fails deterministically during startup. Execution-scoped and transient factories may resolve application, execution-scoped, and transient dependencies inside a valid execution scope.
+
+ForgeMCP deliberately does not use a process-global container, decorators, reflection metadata, or automatic constructor injection. Session/connection scopes, user-created child scopes, and lifecycle-aware disposal remain separate future concerns.
 
 ## Serve the application over MCP
 
