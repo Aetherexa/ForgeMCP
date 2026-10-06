@@ -4,11 +4,14 @@ import type {
   ConfigurationSource,
   ConfigurationValues,
   ModuleType,
+  ServiceFactory,
+  ServiceToken,
 } from "@forgemcp/core";
 
 import { StaticConfigurationSource } from "../configuration/static-configuration-source.js";
 import { ModuleRegistry } from "../registry/module-registry.js";
 import { ForgeApplication } from "../runtime/forge-application.js";
+import { ServiceRegistry } from "../service/service-registry.js";
 
 /**
  * Default implementation of the Forge application builder.
@@ -16,6 +19,7 @@ import { ForgeApplication } from "../runtime/forge-application.js";
 export class ForgeApplicationBuilder implements ApplicationBuilder {
   private readonly modules = new ModuleRegistry();
   private readonly configurationSources: ConfigurationSource[] = [];
+  private readonly services = new ServiceRegistry();
 
   /**
    * Prevent direct instantiation.
@@ -65,11 +69,35 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
   }
 
   /**
+   * Registers an already-created application service.
+   */
+  public provide<TService>(
+    token: ServiceToken<TService>,
+    value: TService,
+  ): this {
+    this.services.registerValue(token, value);
+    return this;
+  }
+
+  /**
+   * Registers a factory used to construct one application service instance.
+   */
+  public provideFactory<TService>(
+    token: ServiceToken<TService>,
+    factory: ServiceFactory<TService>,
+  ): this {
+    this.services.registerFactory(token, factory);
+    return this;
+  }
+
+  /**
    * Builds the application.
    */
   public build(): Application {
-    return new ForgeApplication(this.modules.getAll(), [
-      ...this.configurationSources,
-    ]);
+    return new ForgeApplication(
+      this.modules.getAll(),
+      [...this.configurationSources],
+      this.services.getAll(),
+    );
   }
 }
