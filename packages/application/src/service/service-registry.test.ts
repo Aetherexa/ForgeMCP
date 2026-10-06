@@ -31,9 +31,9 @@ describe("ServiceRegistry", () => {
     expect(() => registry.registerFactory(token, () => "factory")).toThrow(
       "Service 'value' is already registered.",
     );
-    expect(() =>
-      registry.registerScopedFactory(token, () => "scoped"),
-    ).toThrow("Service 'value' is already registered.");
+    expect(() => registry.registerScopedFactory(token, () => "scoped")).toThrow(
+      "Service 'value' is already registered.",
+    );
     expect(() =>
       registry.registerTransientFactory(token, () => "transient"),
     ).toThrow("Service 'value' is already registered.");
@@ -50,10 +50,9 @@ describe("ServiceRegistry", () => {
     registry.registerTransientFactory(transientToken, () => "transient");
 
     expect(
-      registry.getAll().map(({ token, lifetime }) => [
-        token.description,
-        lifetime,
-      ]),
+      registry
+        .getAll()
+        .map(({ token, lifetime }) => [token.description, lifetime]),
     ).toEqual([
       ["application", "application"],
       ["scoped", "execution"],
