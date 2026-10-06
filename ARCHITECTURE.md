@@ -61,31 +61,51 @@ The adapter depends on `@forgemcp/core` and the official MCP server SDK. Core do
 
 ## Application composition
 
-A ForgeMCP application is assembled from module classes.
+A ForgeMCP application explicitly selects module classes through `ForgeApplicationBuilder.use(Module)`.
 
 ```text
 ForgeApplicationBuilder
         |
-        | use(Module)
+        +--> use(ModuleA)
+        +--> use(ModuleB)
+        +--> use(ModuleC)
+        |
         v
    ModuleRegistry
         |
-        | build()
         v
  ForgeApplication
-```
-
-During startup, the application instantiates each module in registration order and calls its `configure()` method.
-
-```text
-Module.configure(ModuleBuilder)
+        |
+        +--> validate module dependencies
+        +--> stable dependency-first plan
+        |
+        v
+ Module.configure(ModuleBuilder)
              |
              +--> tool(...)
              |
              +--> middleware(...)
 ```
 
-The builder collects module contributions. Tool names are required to be unique inside one application.
+Module types may declare required modules through optional static `dependencies` metadata. Dependencies are identified by constructor identity; class names are diagnostic metadata only.
+
+Module selection remains explicit. A dependency declaration never auto-registers another module. Every required module must also be selected with `.use(...)`.
+
+Before configuration resolution, service construction, or module configuration begins, application startup validates the complete selected module graph and produces a stable topological plan.
+
+Composition rules:
+
+- dependencies always configure before dependents;
+- modules with no ordering relationship preserve application selection order;
+- each selected module configures exactly once;
+- shared dependencies in diamond graphs are deduplicated by constructor identity;
+- missing dependencies fail with both the dependent and missing module identified;
+- circular dependencies fail with a deterministic dependency path;
+- graph validation failure returns the application to `Created` before partial module composition is exposed.
+
+Module dependencies express ordering and required composition only. They do not expose module instances to dependents, inject constructors, create module-scoped containers, or alter service lifetimes. Cross-module runtime dependencies continue to use explicit service contracts or ordinary shared abstractions.
+
+The builder collects module contributions after the graph is valid. Tool names are required to be unique inside one application.
 
 ## Configuration
 
