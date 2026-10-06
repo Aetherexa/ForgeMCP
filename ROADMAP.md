@@ -100,11 +100,27 @@ Sprint 2 establishes:
 - [x] service access during module composition;
 - [x] an end-to-end configuration → service → module → MCP example.
 
+### Sprint 3 — Dependency Lifetimes and Execution Scopes
+
+Status: planned.
+
+Plan: [docs/planning/v0.3-sprint-3.md](./docs/planning/v0.3-sprint-3.md)
+
+Backlog: issues #36–#40, tracked by sprint issue #35.
+
+Sprint 3 establishes:
+
+- [ ] explicit application, execution, and transient lifetimes;
+- [ ] one isolated dependency scope per `Application.execute()`;
+- [ ] deterministic captive-dependency diagnostics;
+- [ ] scoped/transient resolution through execution context;
+- [ ] concurrency isolation;
+- [ ] end-to-end MCP validation.
+
 ### Later v0.3 work
 
-After the service-registration slice is complete:
+After the dependency-lifetime slice is complete:
 
-- dependency lifetimes and scopes;
 - module dependencies;
 - lifecycle-aware services.
 
