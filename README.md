@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.3 Sprint 3 dependency lifetimes and execution scopes are complete. ForgeMCP supports application, execution-scoped, and transient services end to end through the official MCP adapter. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.3 Sprint 4 module dependencies and deterministic composition are complete. ForgeMCP now supports explicit module dependency graphs alongside application, execution-scoped, and transient services, all validated end to end through the official MCP adapter. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
 
 ## Why ForgeMCP?
 
@@ -174,6 +174,58 @@ console.log(result.value);
 await app.stop();
 ```
 
+## Module dependencies
+
+Modules can declare required modules through explicit static dependency metadata. The application still selects every module with `.use(...)`; declaring a dependency never silently registers another module.
+
+```ts
+import { ForgeApplicationBuilder } from "@forgemcp/application";
+import type {
+  Module,
+  ModuleBuilder,
+  ModuleType,
+} from "@forgemcp/core";
+
+class DatabaseModule implements Module {
+  configure(_builder: ModuleBuilder): void {
+    // contribute database-backed capabilities
+  }
+}
+
+class OrdersModule implements Module {
+  static readonly dependencies: readonly ModuleType[] = [DatabaseModule];
+
+  configure(builder: ModuleBuilder): void {
+    builder.tool({
+      metadata: { name: "orders" },
+      execute() {
+        return { value: "ready" };
+      },
+    });
+  }
+}
+
+const app = ForgeApplicationBuilder.create()
+  .use(OrdersModule)
+  .use(DatabaseModule)
+  .build();
+
+await app.start();
+```
+
+Although `OrdersModule` is selected first, ForgeMCP validates the complete graph before module configuration and configures `DatabaseModule` first.
+
+Module composition follows these rules:
+
+- every dependency must also be selected explicitly with `.use(...)`;
+- dependencies configure before dependents;
+- otherwise independent modules preserve selection order;
+- shared dependencies in diamond graphs configure exactly once;
+- missing dependencies fail with the dependent and missing module identified;
+- circular dependencies fail with a deterministic dependency path;
+- invalid graphs fail before configuration sources, services, or module contributions are constructed.
+
+Module dependencies express composition requirements only. They do not expose module instances, inject constructors, create a second service container, or use decorators/reflection.
 
 ## Application configuration
 

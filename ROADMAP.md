@@ -119,7 +119,7 @@ Sprint 3 establishes:
 
 ### Sprint 4 — Module Dependencies and Deterministic Composition
 
-Status: planned.
+Status: complete.
 
 Plan: [docs/planning/v0.3-sprint-4.md](./docs/planning/v0.3-sprint-4.md)
 
@@ -127,12 +127,12 @@ Backlog: issues #47–#51, tracked by sprint issue #46.
 
 Sprint 4 establishes:
 
-- [ ] explicit static module dependency metadata;
-- [ ] explicit selection with no hidden auto-registration;
-- [ ] stable dependency-first module ordering;
-- [ ] deterministic missing and circular dependency diagnostics;
-- [ ] startup integration without partial module composition;
-- [ ] end-to-end MCP validation.
+- [x] explicit static module dependency metadata;
+- [x] explicit selection with no hidden auto-registration;
+- [x] stable dependency-first module ordering;
+- [x] deterministic missing and circular dependency diagnostics;
+- [x] startup integration without partial module composition;
+- [x] end-to-end MCP validation.
 
 ### Later v0.3 work
 
