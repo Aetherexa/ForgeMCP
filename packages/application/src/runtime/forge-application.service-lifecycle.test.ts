@@ -1,7 +1,4 @@
-import {
-  createServiceToken,
-  LifecycleState,
-} from "@forgemcp/core";
+import { createServiceToken, LifecycleState } from "@forgemcp/core";
 import { describe, expect, it } from "vitest";
 
 import { ForgeApplicationBuilder } from "../builder/forge-application-builder.js";
@@ -16,9 +13,7 @@ describe("ForgeApplication service lifecycle", () => {
       })
       .build();
 
-    await expect(application.start()).rejects.toThrow(
-      "service unavailable",
-    );
+    await expect(application.start()).rejects.toThrow("service unavailable");
 
     expect(application.state).toBe(LifecycleState.Created);
   });
