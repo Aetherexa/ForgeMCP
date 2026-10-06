@@ -91,6 +91,28 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
   }
 
   /**
+   * Registers a factory resolved once for each execution scope.
+   */
+  public provideScopedFactory<TService>(
+    token: ServiceToken<TService>,
+    factory: ServiceFactory<TService>,
+  ): this {
+    this.services.registerScopedFactory(token, factory);
+    return this;
+  }
+
+  /**
+   * Registers a factory resolved for every request inside an execution scope.
+   */
+  public provideTransientFactory<TService>(
+    token: ServiceToken<TService>,
+    factory: ServiceFactory<TService>,
+  ): this {
+    this.services.registerTransientFactory(token, factory);
+    return this;
+  }
+
+  /**
    * Builds the application.
    */
   public build(): Application {
