@@ -18,10 +18,9 @@ export interface ServiceProvider {
 }
 
 /**
- * Asynchronous resolver available while service factories are being built.
+ * Asynchronous service resolver used while factories are being constructed.
  *
- * A resolver may construct dependencies recursively before the final
- * read-only ServiceProvider is exposed to module composition.
+ * The active lifetime boundary determines which registrations may be resolved.
  */
 export interface ServiceResolver {
   /**

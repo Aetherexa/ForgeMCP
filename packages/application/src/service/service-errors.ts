@@ -1,4 +1,4 @@
-import type { ServiceToken } from "@forgemcp/core";
+import type { ServiceLifetime, ServiceToken } from "@forgemcp/core";
 
 /**
  * Raised when the same service token is registered more than once.
@@ -31,5 +31,29 @@ export class CircularServiceDependencyError extends Error {
 
     this.name = "CircularServiceDependencyError";
     this.dependencyPath = Object.freeze([...dependencyPath]);
+  }
+}
+
+/**
+ * Raised when an application-lifetime service captures a shorter-lived service.
+ */
+export class CaptiveServiceDependencyError extends Error {
+  public readonly consumerDescription: string;
+  public readonly dependencyDescription: string;
+  public readonly dependencyLifetime: ServiceLifetime;
+
+  public constructor(
+    consumer: ServiceToken<unknown>,
+    dependency: ServiceToken<unknown>,
+    dependencyLifetime: ServiceLifetime,
+  ) {
+    super(
+      `Application service '${consumer.description}' cannot depend on ${dependencyLifetime} service '${dependency.description}'.`,
+    );
+
+    this.name = "CaptiveServiceDependencyError";
+    this.consumerDescription = consumer.description;
+    this.dependencyDescription = dependency.description;
+    this.dependencyLifetime = dependencyLifetime;
   }
 }

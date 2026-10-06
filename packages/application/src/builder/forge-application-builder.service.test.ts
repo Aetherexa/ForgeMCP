@@ -75,6 +75,27 @@ describe("ForgeApplicationBuilder services", () => {
     expect(result.value).toBe("https://example.test");
   });
 
+  it("does not construct scoped or transient services during startup", async () => {
+    const scopedToken = createServiceToken<object>("scoped");
+    const transientToken = createServiceToken<object>("transient");
+    let constructions = 0;
+
+    const application = ForgeApplicationBuilder.create()
+      .provideScopedFactory(scopedToken, () => {
+        constructions += 1;
+        return {};
+      })
+      .provideTransientFactory(transientToken, () => {
+        constructions += 1;
+        return {};
+      })
+      .build();
+
+    await application.start();
+
+    expect(constructions).toBe(0);
+  });
+
   it("rejects duplicate service registration while building the app", () => {
     const token = createServiceToken<string>("service");
     const builder = ForgeApplicationBuilder.create().provide(token, "one");
