@@ -21,5 +21,15 @@ export interface ApplicationBuilder {
     factory: ServiceFactory<TService>,
   ): this;
 
+  provideScopedFactory<TService>(
+    token: ServiceToken<TService>,
+    factory: ServiceFactory<TService>,
+  ): this;
+
+  provideTransientFactory<TService>(
+    token: ServiceToken<TService>,
+    factory: ServiceFactory<TService>,
+  ): this;
+
   build(): MaybePromise<Application>;
 }
