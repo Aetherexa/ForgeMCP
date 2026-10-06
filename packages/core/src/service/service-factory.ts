@@ -1,6 +1,6 @@
 import type { Configuration } from "../configuration/index.js";
 import type { MaybePromise } from "../types/index.js";
-import type { ServiceProvider } from "./service-provider.js";
+import type { ServiceResolver } from "./service-provider.js";
 
 /**
  * Inputs available while constructing an application service.
@@ -12,9 +12,9 @@ export interface ServiceFactoryContext {
   readonly configuration: Configuration;
 
   /**
-   * Access to other application services.
+   * Access to other application services while they are being resolved.
    */
-  readonly services: ServiceProvider;
+  readonly services: ServiceResolver;
 }
 
 /**
