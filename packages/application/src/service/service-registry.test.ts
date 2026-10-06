@@ -2,10 +2,7 @@ import { createServiceToken } from "@forgemcp/core";
 import { describe, expect, it } from "vitest";
 
 import { ForgeConfiguration } from "../configuration/forge-configuration.js";
-import {
-  CircularServiceDependencyError,
-  DuplicateServiceRegistrationError,
-} from "./service-errors.js";
+import { DuplicateServiceRegistrationError } from "./service-errors.js";
 import { ServiceRegistry } from "./service-registry.js";
 
 describe("ServiceRegistry", () => {
@@ -147,7 +144,7 @@ describe("ServiceRegistry", () => {
 
     await expect(
       registry.resolve(new ForgeConfiguration()),
-    ).rejects.toMatchObject<CircularServiceDependencyError>({
+    ).rejects.toMatchObject({
       name: "CircularServiceDependencyError",
       dependencyPath: ["first", "second", "first"],
     });
