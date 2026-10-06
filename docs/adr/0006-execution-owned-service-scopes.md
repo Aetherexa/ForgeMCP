@@ -1,6 +1,6 @@
 # ADR 0006: Use execution-owned service scopes for shorter-lived dependencies
 
-- Status: Proposed
+- Status: Accepted
 - Date: 2026-10-06
 
 ## Context
