@@ -316,7 +316,7 @@ class ScopedModule implements Module {
 
 const app = ForgeApplicationBuilder.create()
   .provideScopedFactory(requestState, ({ configuration }) => ({
-    id: configuration.get("request.defaultId") ?? crypto.randomUUID(),
+    id: configuration.get("request.defaultId") ?? "request-local",
   }))
   .provideTransientFactory(formatter, () => ({
     format: (value) => value.trim(),
