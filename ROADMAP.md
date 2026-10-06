@@ -83,21 +83,22 @@ Sprint 1 establishes:
 
 ### Sprint 2 — Service Registration Foundation
 
-Status: ready to start.
+Status: complete.
 
 Plan: [docs/planning/v0.3-sprint-2.md](./docs/planning/v0.3-sprint-2.md)
 
 Backlog: issues #22–#26, tracked by sprint issue #21.
 
-Sprint 2 will establish:
+Sprint 2 establishes:
 
-- typed service tokens;
-- explicit application service registration;
-- deterministic singleton-style application service resolution;
-- configuration-aware service factories;
-- duplicate, missing, and circular dependency diagnostics;
-- service access during module composition;
-- an end-to-end configuration → service → module → MCP example.
+- [x] typed service tokens;
+- [x] explicit application service registration;
+- [x] deterministic application-lifetime service resolution;
+- [x] configuration-aware service factories;
+- [x] async factory-to-factory dependency resolution;
+- [x] duplicate, missing, and circular dependency diagnostics;
+- [x] service access during module composition;
+- [x] an end-to-end configuration → service → module → MCP example.
 
 ### Later v0.3 work
 

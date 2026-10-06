@@ -16,6 +16,7 @@ Current areas include:
 
 - application contracts;
 - configuration contracts;
+- service tokens, factories, resolvers, and providers;
 - execution context;
 - lifecycle;
 - modules;
@@ -35,6 +36,7 @@ Current responsibilities include:
 - `ForgeApplication`;
 - resolved immutable configuration;
 - explicit and environment-backed configuration sources;
+- deterministic application service registration and resolution;
 - `ModuleRegistry`;
 - `ToolRegistry`;
 - `ForgeModuleBuilder`;
@@ -115,6 +117,46 @@ Configuration keys are canonical lowercase dot-separated paths. Environment-back
 A configuration-source failure is a startup failure. The application returns to `Created`, preserving the same retry behavior as module-composition failures.
 
 The core package defines configuration contracts but does not read Node process state. `EnvironmentConfigurationSource` lives in `@forgemcp/application`.
+
+## Application services
+
+Application services are resolved during startup after configuration and before module composition.
+
+```text
+ForgeApplicationBuilder
+        |
+        +--> provide(token, value)
+        +--> provideFactory(token, factory)
+        |
+        v
+ServiceRegistry
+        |
+        +--> resolved Configuration
+        +--> recursive async ServiceResolver
+        |
+        +--> duplicate detection
+        +--> missing dependency diagnostics
+        +--> circular dependency detection
+        |
+        v
+resolved ServiceProvider
+        |
+        v
+ModuleBuilder.services
+        |
+        v
+Module.configure(...)
+```
+
+`ServiceToken<T>` values are identity-based. Human-readable descriptions are diagnostic metadata, not registration keys.
+
+Factories may resolve other services asynchronously, including services registered later. Successful constructions are cached for the current application start. Only after all registrations resolve successfully does module composition receive the synchronous read-only `ServiceProvider`.
+
+Sprint 2 defines one application lifetime only: one resolved instance per token for one successful application start. Request scopes, transient lifetimes, child scopes, and disposal graphs are deliberately deferred.
+
+A service-resolution failure is an application startup failure. The application returns to `Created`, no partially resolved provider is exposed to modules, and a later `start()` may retry.
+
+Tools and middleware receive dependencies explicitly when modules construct them. ForgeMCP does not introduce ambient service lookup during tool execution.
 
 ## Lifecycle
 
@@ -226,7 +268,8 @@ The framework kernel does not yet include:
 
 - MCP SDK binding;
 - stdio or HTTP transports;
-- dependency injection;
+- multiple dependency lifetimes/scopes;
+- lifecycle-aware service disposal;
 - structured logging;
 - telemetry and metrics;
 - authentication or authorization;

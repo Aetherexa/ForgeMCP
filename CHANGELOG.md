@@ -14,6 +14,14 @@ The project follows semantic versioning once public packages begin publishing st
 - prefix-scoped environment-backed configuration;
 - module access to resolved configuration through `ModuleBuilder.configuration`;
 - end-to-end configuration coverage through the MCP adapter;
+- typed identity-based service tokens and read-only service-provider contracts;
+- explicit service value and factory registration on `ForgeApplicationBuilder`;
+- deterministic application-lifetime service resolution during startup;
+- configuration-aware asynchronous service factories;
+- missing, duplicate, and circular service dependency diagnostics;
+- resolved service access through `ModuleBuilder.services`;
+- lifecycle rollback and retry behavior for failed service construction;
+- end-to-end configuration → service → module → MCP integration coverage;
 - runtime coverage thresholds and coverage artifacts in CI;
 - regression tests for application isolation, lifecycle cleanup, MCP request metadata, stdio delegation, and result serialization edge cases;
 - package entry-point smoke tests and package tarball validation;
