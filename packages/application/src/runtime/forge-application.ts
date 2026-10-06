@@ -69,10 +69,7 @@ export class ForgeApplication implements Application {
       const services = await new ServiceRegistry(
         this.serviceRegistrations,
       ).resolve(configuration);
-      const moduleBuilder = new ForgeModuleBuilder(
-        configuration,
-        services,
-      );
+      const moduleBuilder = new ForgeModuleBuilder(configuration, services);
 
       for (const Module of this.modules) {
         const module = new Module();
