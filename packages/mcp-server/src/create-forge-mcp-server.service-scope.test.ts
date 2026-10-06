@@ -20,7 +20,9 @@ interface LifetimeResult {
 }
 
 describe("createForgeMcpServer service lifetimes", () => {
-  it("preserves application, scoped, and transient semantics across MCP calls", async () => {
+  it(
+    "preserves application, scoped, and transient semantics across MCP calls",
+    async () => {
     const applicationToken = createServiceToken<{ id: number }>("application");
     const scopedToken = createServiceToken<{
       id: number;
@@ -107,9 +109,9 @@ describe("createForgeMcpServer service lifetimes", () => {
       expect(first.scopedId).not.toBe(second.scopedId);
       expect(first.transientIds[0]).not.toBe(first.transientIds[1]);
       expect(second.transientIds[0]).not.toBe(second.transientIds[1]);
-      expect(new Set([...first.transientIds, ...second.transientIds]).size).toBe(
-        4,
-      );
+      expect(
+        new Set([...first.transientIds, ...second.transientIds]).size,
+      ).toBe(4);
 
       expect(applicationConstructions).toBe(1);
       expect(scopedConstructions).toBe(2);
@@ -118,9 +120,12 @@ describe("createForgeMcpServer service lifetimes", () => {
       await client.close();
       await server.close();
     }
-  });
+    },
+  );
 
-  it("keeps overlapping MCP tool calls in isolated execution scopes", async () => {
+  it(
+    "keeps overlapping MCP tool calls in isolated execution scopes",
+    async () => {
     const applicationToken = createServiceToken<{ id: number }>("application");
     const scopedToken = createServiceToken<{
       id: number;
@@ -220,7 +225,8 @@ describe("createForgeMcpServer service lifetimes", () => {
       await client.close();
       await server.close();
     }
-  });
+    },
+  );
 });
 
 function getJson<TResult>(result: CallToolResult): TResult {
