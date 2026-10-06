@@ -17,6 +17,7 @@ import { resolveConfiguration } from "../configuration/configuration-resolver.js
 import { ToolRegistry } from "../registry/tool-registry.js";
 import type { ServiceRegistration } from "../service/service-registration.js";
 import { ServiceRegistry } from "../service/service-registry.js";
+import type { ServiceRuntime } from "../service/service-runtime.js";
 import { ForgeMiddlewarePipeline } from "./forge-middleware-pipeline.js";
 
 /**
@@ -26,6 +27,7 @@ export class ForgeApplication implements Application {
   private currentState = LifecycleState.Created;
   private toolRegistry: ToolRegistry | undefined;
   private middleware: readonly Middleware[] = [];
+  private serviceRuntime: ServiceRuntime | undefined;
 
   /**
    * Creates a new Forge application.
@@ -66,10 +68,13 @@ export class ForgeApplication implements Application {
       const configuration = await resolveConfiguration(
         this.configurationSources,
       );
-      const services = await new ServiceRegistry(
+      const serviceRuntime = await new ServiceRegistry(
         this.serviceRegistrations,
-      ).resolve(configuration);
-      const moduleBuilder = new ForgeModuleBuilder(configuration, services);
+      ).resolveRuntime(configuration);
+      const moduleBuilder = new ForgeModuleBuilder(
+        configuration,
+        serviceRuntime.services,
+      );
 
       for (const Module of this.modules) {
         const module = new Module();
@@ -84,10 +89,12 @@ export class ForgeApplication implements Application {
 
       this.toolRegistry = toolRegistry;
       this.middleware = moduleBuilder.getMiddleware();
+      this.serviceRuntime = serviceRuntime;
       this.currentState = LifecycleState.Started;
     } catch (error) {
       this.toolRegistry = undefined;
       this.middleware = [];
+      this.serviceRuntime = undefined;
       this.currentState = LifecycleState.Created;
       throw error;
     }
@@ -112,12 +119,14 @@ export class ForgeApplication implements Application {
   ): Promise<ToolResult<TResult>> {
     if (
       this.currentState !== LifecycleState.Started ||
-      this.toolRegistry === undefined
+      this.toolRegistry === undefined ||
+      this.serviceRuntime === undefined
     ) {
       throw new Error("Application must be started before executing tools.");
     }
 
     const tool = this.toolRegistry.require(toolName);
+    const services = this.serviceRuntime.createScope();
 
     const context: ExecutionContext = {
       execution: {
@@ -125,6 +134,7 @@ export class ForgeApplication implements Application {
         startedAt: new Date(),
         attributes: Object.freeze({ ...attributes }),
       },
+      services,
     };
 
     const pipeline = new ForgeMiddlewarePipeline(
@@ -151,6 +161,7 @@ export class ForgeApplication implements Application {
     if (this.currentState === LifecycleState.Created) {
       this.toolRegistry = undefined;
       this.middleware = [];
+      this.serviceRuntime = undefined;
       this.currentState = LifecycleState.Stopped;
       return;
     }
@@ -166,6 +177,7 @@ export class ForgeApplication implements Application {
     try {
       this.toolRegistry = undefined;
       this.middleware = [];
+      this.serviceRuntime = undefined;
       this.currentState = LifecycleState.Stopped;
     } catch (error) {
       this.currentState = LifecycleState.Started;
