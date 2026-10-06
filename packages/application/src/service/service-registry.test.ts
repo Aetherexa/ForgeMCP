@@ -102,8 +102,9 @@ describe("ServiceRegistry", () => {
     const missingToken = createServiceToken<string>("missing");
     const registry = new ServiceRegistry();
 
-    registry.registerFactory(serviceToken, async ({ services }) =>
-      (await services.get(missingToken)) ?? "fallback",
+    registry.registerFactory(
+      serviceToken,
+      async ({ services }) => (await services.get(missingToken)) ?? "fallback",
     );
 
     const provider = await registry.resolve(new ForgeConfiguration());
@@ -140,12 +141,12 @@ describe("ServiceRegistry", () => {
       return "second";
     });
 
-    await expect(registry.resolve(new ForgeConfiguration())).rejects.toMatchObject(
-      {
-        name: "CircularServiceDependencyError",
-        dependencyPath: ["first", "second", "first"],
-      },
-    );
+    await expect(
+      registry.resolve(new ForgeConfiguration()),
+    ).rejects.toMatchObject({
+      name: "CircularServiceDependencyError",
+      dependencyPath: ["first", "second", "first"],
+    });
 
     await expect(registry.resolve(new ForgeConfiguration())).rejects.toThrow(
       "Circular service dependency detected: 'first' -> 'second' -> 'first'.",

@@ -13,5 +13,4 @@ export interface FactoryServiceRegistration {
 }
 
 export type ServiceRegistration =
-  | ValueServiceRegistration
-  | FactoryServiceRegistration;
+  ValueServiceRegistration | FactoryServiceRegistration;
