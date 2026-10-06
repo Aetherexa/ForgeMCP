@@ -15,6 +15,8 @@ import {
 import { ForgeModuleBuilder } from "../builder/forge-module-builder.js";
 import { resolveConfiguration } from "../configuration/configuration-resolver.js";
 import { ToolRegistry } from "../registry/tool-registry.js";
+import type { ServiceRegistration } from "../service/service-registration.js";
+import { ServiceRegistry } from "../service/service-registry.js";
 import { ForgeMiddlewarePipeline } from "./forge-middleware-pipeline.js";
 
 /**
@@ -31,6 +33,7 @@ export class ForgeApplication implements Application {
   public constructor(
     private readonly modules: readonly ModuleType[],
     private readonly configurationSources: readonly ConfigurationSource[] = [],
+    private readonly serviceRegistrations: readonly ServiceRegistration[] = [],
   ) {}
 
   /**
@@ -63,7 +66,13 @@ export class ForgeApplication implements Application {
       const configuration = await resolveConfiguration(
         this.configurationSources,
       );
-      const moduleBuilder = new ForgeModuleBuilder(configuration);
+      const services = await new ServiceRegistry(
+        this.serviceRegistrations,
+      ).resolve(configuration);
+      const moduleBuilder = new ForgeModuleBuilder(
+        configuration,
+        services,
+      );
 
       for (const Module of this.modules) {
         const module = new Module();
