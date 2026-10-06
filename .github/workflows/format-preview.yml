@@ -34,10 +34,10 @@ jobs:
 
       - name: Generate canonical formatting diff
         run: |
-          pnpm exec prettier --write \
-            packages/application/src/service/service-registration.ts \
-            packages/application/src/service/service-registry.ts \
-            packages/application/src/service/service-registry.test.ts
+          pnpm --filter @forgemcp/application exec prettier --write \
+            src/service/service-registration.ts \
+            src/service/service-registry.ts \
+            src/service/service-registry.test.ts
           git diff -- \
             packages/application/src/service/service-registration.ts \
             packages/application/src/service/service-registry.ts \
