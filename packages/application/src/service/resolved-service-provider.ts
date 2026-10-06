@@ -14,9 +14,7 @@ export class ResolvedServiceProvider implements ServiceProvider {
     this.values = new Map(values);
   }
 
-  public get<TService>(
-    token: ServiceToken<TService>,
-  ): TService | undefined {
+  public get<TService>(token: ServiceToken<TService>): TService | undefined {
     return this.values.get(token.id) as TService | undefined;
   }
 
