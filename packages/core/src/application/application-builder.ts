@@ -3,10 +3,7 @@ import type {
   ConfigurationValues,
 } from "../configuration/index.js";
 import type { ModuleType } from "../module/index.js";
-import type {
-  ServiceFactory,
-  ServiceToken,
-} from "../service/index.js";
+import type { ServiceFactory, ServiceToken } from "../service/index.js";
 import type { MaybePromise } from "../types/maybe-promise.js";
 import type { Application } from "./application.js";
 
