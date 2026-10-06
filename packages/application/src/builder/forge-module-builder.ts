@@ -2,11 +2,13 @@ import type {
   Configuration,
   Middleware,
   ModuleBuilder,
+  ServiceProvider,
   Tool,
 } from "@forgemcp/core";
 
 import { ForgeConfiguration } from "../configuration/forge-configuration.js";
 import { ToolRegistry } from "../registry/tool-registry.js";
+import { ResolvedServiceProvider } from "../service/resolved-service-provider.js";
 
 /**
  * Default collector for contributions made by application modules.
@@ -17,6 +19,7 @@ export class ForgeModuleBuilder implements ModuleBuilder {
 
   public constructor(
     public readonly configuration: Configuration = new ForgeConfiguration(),
+    public readonly services: ServiceProvider = new ResolvedServiceProvider(),
   ) {}
 
   /**
