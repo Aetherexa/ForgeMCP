@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.3 Sprint 1 configuration foundation is complete; dependency-management work continues toward the v0.3 milestone. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.3 Sprint 2 service-registration foundation is complete. Configuration and explicit application services now work end to end through the MCP adapter. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
 
 ## Why ForgeMCP?
 
@@ -217,6 +217,58 @@ await app.start();
 With prefix `MYAPP_`, environment variable `MYAPP_API__ENDPOINT` maps to `api.endpoint`.
 
 Modules consume the resolved immutable configuration through `ModuleBuilder.configuration`; they do not need to read `process.env` directly.
+
+## Application services
+
+ForgeMCP resolves application services during startup after configuration is available and before modules are composed.
+
+Services use typed identity-based tokens:
+
+```ts
+import { ForgeApplicationBuilder } from "@forgemcp/application";
+import {
+  createServiceToken,
+  type Module,
+  type ModuleBuilder,
+} from "@forgemcp/core";
+
+class ApiClient {
+  constructor(public readonly baseUrl: string) {}
+}
+
+const apiClient = createServiceToken<ApiClient>("apiClient");
+
+class ApiModule implements Module {
+  configure(builder: ModuleBuilder): void {
+    const client = builder.services.require(apiClient);
+
+    builder.tool({
+      metadata: { name: "api-base-url" },
+      execute() {
+        return { value: client.baseUrl };
+      },
+    });
+  }
+}
+
+const app = ForgeApplicationBuilder.create()
+  .configure({
+    "api.baseUrl": "https://example.test",
+  })
+  .provideFactory(apiClient, ({ configuration }) =>
+    new ApiClient(configuration.require("api.baseUrl")),
+  )
+  .use(ApiModule)
+  .build();
+
+await app.start();
+```
+
+Use `provide(token, value)` for an existing service instance and `provideFactory(token, factory)` when ForgeMCP should construct the service during application startup.
+
+Factories can resolve other registered services asynchronously. The runtime constructs each service at most once per successful application start, rejects duplicate registrations, reports missing dependencies, and detects circular dependency paths.
+
+Modules receive the fully resolved read-only provider through `ModuleBuilder.services`. Tools and middleware should receive dependencies explicitly through normal construction or closures rather than performing ambient service lookup during execution.
 
 ## Serve the application over MCP
 
