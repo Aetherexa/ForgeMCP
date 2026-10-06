@@ -28,9 +28,9 @@ describe("ServiceRegistry", () => {
     expect(() => registry.registerValue(token, "second")).toThrow(
       DuplicateServiceRegistrationError,
     );
-    expect(() =>
-      registry.registerFactory(token, () => "factory"),
-    ).toThrow("Service 'value' is already registered.");
+    expect(() => registry.registerFactory(token, () => "factory")).toThrow(
+      "Service 'value' is already registered.",
+    );
   });
 
   it("constructs factories from resolved configuration", async () => {
@@ -120,9 +120,7 @@ describe("ServiceRegistry", () => {
       services.require(missingToken),
     );
 
-    await expect(
-      registry.resolve(new ForgeConfiguration()),
-    ).rejects.toThrow(
+    await expect(registry.resolve(new ForgeConfiguration())).rejects.toThrow(
       "Service 'missing' is required but was not registered.",
     );
   });
@@ -142,16 +140,14 @@ describe("ServiceRegistry", () => {
       return "second";
     });
 
-    await expect(
-      registry.resolve(new ForgeConfiguration()),
-    ).rejects.toMatchObject({
-      name: "CircularServiceDependencyError",
-      dependencyPath: ["first", "second", "first"],
-    });
+    await expect(registry.resolve(new ForgeConfiguration())).rejects.toMatchObject(
+      {
+        name: "CircularServiceDependencyError",
+        dependencyPath: ["first", "second", "first"],
+      },
+    );
 
-    await expect(
-      registry.resolve(new ForgeConfiguration()),
-    ).rejects.toThrow(
+    await expect(registry.resolve(new ForgeConfiguration())).rejects.toThrow(
       "Circular service dependency detected: 'first' -> 'second' -> 'first'.",
     );
   });
