@@ -1,7 +1,4 @@
-import type {
-  ServiceFactory,
-  ServiceToken,
-} from "@forgemcp/core";
+import type { ServiceFactory, ServiceToken } from "@forgemcp/core";
 
 export interface ValueServiceRegistration {
   readonly kind: "value";
