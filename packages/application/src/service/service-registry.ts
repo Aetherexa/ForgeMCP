@@ -74,7 +74,9 @@ export class ServiceRegistry {
     return (await this.resolveRuntime(configuration)).services;
   }
 
-  public async resolveRuntime(\n    configuration: Configuration,\n  ): Promise<ServiceRuntime> {
+  public async resolveRuntime(
+    configuration: Configuration,
+  ): Promise<ServiceRuntime> {
     const engine = new ApplicationServiceResolutionEngine(
       this.getAll(),
       configuration,
