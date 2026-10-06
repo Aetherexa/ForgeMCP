@@ -42,6 +42,8 @@ Factory creation defines framework ownership.
 
 Caller-owned values are never automatically disposed, even if they implement a standard disposal symbol.
 
+Disposal is capability-based on the factory result; registrations do not need a separate "disposable" flag or lifecycle-specific registration API.
+
 This prevents ForgeMCP from closing a shared dependency whose lifetime is managed elsewhere.
 
 ## Application ownership
