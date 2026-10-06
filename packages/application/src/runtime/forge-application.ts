@@ -14,6 +14,7 @@ import {
 
 import { ForgeModuleBuilder } from "../builder/forge-module-builder.js";
 import { resolveConfiguration } from "../configuration/configuration-resolver.js";
+import { planModuleComposition } from "../registry/module-composition-planner.js";
 import { ToolRegistry } from "../registry/tool-registry.js";
 import type { ServiceRegistration } from "../service/service-registration.js";
 import { ServiceRegistry } from "../service/service-registry.js";
@@ -65,6 +66,7 @@ export class ForgeApplication implements Application {
     this.currentState = LifecycleState.Starting;
 
     try {
+      const modules = planModuleComposition(this.modules);
       const configuration = await resolveConfiguration(
         this.configurationSources,
       );
@@ -76,7 +78,7 @@ export class ForgeApplication implements Application {
         serviceRuntime.services,
       );
 
-      for (const Module of this.modules) {
+      for (const Module of modules) {
         const module = new Module();
         await module.configure(moduleBuilder);
       }
