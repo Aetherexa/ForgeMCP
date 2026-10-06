@@ -1,9 +1,5 @@
 import { ForgeApplicationBuilder } from "@forgemcp/application";
-import type {
-  Module,
-  ModuleBuilder,
-  ModuleType,
-} from "@forgemcp/core";
+import type { Module, ModuleBuilder, ModuleType } from "@forgemcp/core";
 import { Client } from "@modelcontextprotocol/client";
 import {
   type CallToolResult,
