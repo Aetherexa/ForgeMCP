@@ -20,9 +20,7 @@ interface LifetimeResult {
 }
 
 describe("createForgeMcpServer service lifetimes", () => {
-  it(
-    "preserves application, scoped, and transient semantics across MCP calls",
-    async () => {
+  it("preserves application, scoped, and transient semantics across MCP calls", async () => {
     const applicationToken = createServiceToken<{ id: number }>("application");
     const scopedToken = createServiceToken<{
       id: number;
@@ -120,12 +118,9 @@ describe("createForgeMcpServer service lifetimes", () => {
       await client.close();
       await server.close();
     }
-    },
-  );
+  });
 
-  it(
-    "keeps overlapping MCP tool calls in isolated execution scopes",
-    async () => {
+  it("keeps overlapping MCP tool calls in isolated execution scopes", async () => {
     const applicationToken = createServiceToken<{ id: number }>("application");
     const scopedToken = createServiceToken<{
       id: number;
@@ -225,8 +220,7 @@ describe("createForgeMcpServer service lifetimes", () => {
       await client.close();
       await server.close();
     }
-    },
-  );
+  });
 });
 
 function getJson<TResult>(result: CallToolResult): TResult {
