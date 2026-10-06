@@ -118,45 +118,70 @@ A configuration-source failure is a startup failure. The application returns to 
 
 The core package defines configuration contracts but does not read Node process state. `EnvironmentConfigurationSource` lives in `@forgemcp/application`.
 
-## Application services
+## Service registration and lifetimes
 
-Application services are resolved during startup after configuration and before module composition.
+Services are registered explicitly through `ForgeApplicationBuilder`. Configuration is resolved first, application-lifetime services are constructed next, and modules are composed only after the application service graph is valid.
 
 ```text
 ForgeApplicationBuilder
         |
-        +--> provide(token, value)
-        +--> provideFactory(token, factory)
+        +--> provide(token, value)                 application
+        +--> provideFactory(token, factory)        application
+        +--> provideScopedFactory(token, factory)  execution
+        +--> provideTransientFactory(token, factory) transient
         |
         v
 ServiceRegistry
         |
         +--> resolved Configuration
-        +--> recursive async ServiceResolver
-        |
-        +--> duplicate detection
-        +--> missing dependency diagnostics
-        +--> circular dependency detection
+        +--> duplicate/missing/circular diagnostics
+        +--> captive-dependency validation
         |
         v
-resolved ServiceProvider
+ServiceRuntime
         |
-        v
-ModuleBuilder.services
+        +--> application ServiceProvider
+        |        |
+        |        v
+        |   ModuleBuilder.services
         |
-        v
-Module.configure(...)
+        +--> createScope()
+                 |
+                 v
+          ExecutionContext.services
 ```
 
 `ServiceToken<T>` values are identity-based. Human-readable descriptions are diagnostic metadata, not registration keys.
 
-Factories may resolve other services asynchronously, including services registered later. Successful constructions are cached for the current application start. Only after all registrations resolve successfully does module composition receive the synchronous read-only `ServiceProvider`.
+ForgeMCP defines three lifetimes:
 
-Sprint 2 defines one application lifetime only: one resolved instance per token for one successful application start. Request scopes, transient lifetimes, child scopes, and disposal graphs are deliberately deferred.
+| Lifetime | Construction boundary | Reuse |
+| --- | --- | --- |
+| Application | successful application start | one instance per token for the running application |
+| Execution | one `Application.execute()` call | one instance per token inside that execution |
+| Transient | one scoped resolution request | never cached |
 
-A service-resolution failure is an application startup failure. The application returns to `Created`, no partially resolved provider is exposed to modules, and a later `start()` may retry.
+Existing `provide(...)` and `provideFactory(...)` APIs remain application-lifetime. Shorter-lived registrations are factory-based and explicit.
 
-Tools and middleware receive dependencies explicitly when modules construct them. ForgeMCP does not introduce ambient service lookup during tool execution.
+The runtime enforces this dependency matrix:
+
+| Consumer lifetime | Application dependency | Execution dependency | Transient dependency |
+| --- | --- | --- | --- |
+| Application | allowed | rejected | rejected |
+| Execution | allowed | allowed | allowed |
+| Transient inside an execution scope | allowed | allowed | allowed |
+
+Rejecting shorter-lived dependencies from an application service prevents captive dependencies whose effective lifetime would silently expand to the application lifetime.
+
+Application services resolve during startup. Factories may resolve other application services asynchronously, including services registered later. Successful application constructions are cached for the current successful start. A missing dependency, circular path, duplicate registration, captive dependency, or factory failure fails startup deterministically and returns the application to `Created`.
+
+`ModuleBuilder.services` remains synchronous and exposes application-lifetime services only. Modules can therefore construct long-lived tools and middleware without a request-local container.
+
+Each valid `Application.execute()` call creates an independent asynchronous resolver exposed as `ExecutionContext.services`. Middleware and the target tool share the same resolver for that execution. Execution-scoped services are cached inside that resolver; transient services are constructed for every resolution request; already-resolved application services are reused.
+
+Concurrent executions own independent scoped caches and in-flight maps. No request scope is stored in process-global state or shared between calls. When an execution settles, its scope references become unreachable. Explicit disposal hooks are intentionally deferred to the later lifecycle-aware-services slice.
+
+The official MCP adapter does not create another dependency scope. Every MCP tool request delegates to `Application.execute()`, so sequential and concurrent MCP calls inherit the same Forge execution-scope semantics.
 
 ## Lifecycle
 
@@ -188,8 +213,13 @@ Application.execute(name, input)
         v
     ToolRegistry
         |
+        +--> create execution ServiceScope
+        |
         v
  create ExecutionContext
+        |
+        +--> execution metadata
+        +--> scoped ServiceResolver
         |
         v
  Middleware Pipeline
@@ -207,7 +237,8 @@ Each execution receives a fresh context containing:
 
 - unique execution ID;
 - UTC start timestamp;
-- immutable top-level attributes supplied by the caller.
+- immutable top-level attributes supplied by the caller;
+- an asynchronous service resolver owned by that execution scope.
 
 ## Middleware
 
@@ -262,14 +293,16 @@ The MCP adapter consumes those schemas and passes them to the official SDK. Prot
 
 Future observability, dependency-management, and plugin packages should continue to depend inward on kernel contracts rather than introducing reverse dependencies.
 
-## Deliberate v0.1 exclusions
+## Deliberate exclusions
 
-The framework kernel does not yet include:
+The current framework intentionally does not include:
 
-- MCP SDK binding;
-- stdio or HTTP transports;
-- multiple dependency lifetimes/scopes;
-- lifecycle-aware service disposal;
+- HTTP transport integration;
+- session or MCP-connection dependency scopes;
+- child scopes created directly by application code;
+- lifecycle-aware service disposal hooks;
+- automatic constructor injection, decorators, or reflection metadata;
+- module dependency graphs;
 - structured logging;
 - telemetry and metrics;
 - authentication or authorization;
@@ -277,7 +310,7 @@ The framework kernel does not yet include:
 - plugin discovery;
 - CLI or code generators.
 
-These features belong after the execution model is stable.
+These concerns remain separate roadmap slices so they do not destabilize the explicit execution and dependency model.
 
 ## Evolution rules
 
