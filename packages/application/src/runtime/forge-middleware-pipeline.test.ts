@@ -9,6 +9,10 @@ const context: ExecutionContext = {
     startedAt: new Date("2026-01-01T00:00:00.000Z"),
     attributes: {},
   },
+  services: {
+    get: () => Promise.resolve(undefined),
+    require: () => Promise.reject(new Error("Service is not registered.")),
+  },
 };
 
 describe("ForgeMiddlewarePipeline", () => {
