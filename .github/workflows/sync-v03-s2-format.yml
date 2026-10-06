@@ -1,0 +1,53 @@
+name: Sync Sprint 2 formatting
+
+on:
+  push:
+    branches:
+      - feat/v0.3-s2-service-registry
+    paths:
+      - ".github/workflows/sync-v03-s2-format.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          ref: feat/v0.3-s2-service-registry
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Prepare pnpm
+        run: corepack prepare pnpm@11.10.0 --activate
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Format changed packages
+        run: |
+          pnpm --filter @forgemcp/core exec prettier --write "src/**/*.ts"
+          pnpm --filter @forgemcp/application exec prettier --write "src/**/*.ts"
+
+      - name: Commit formatting
+        run: |
+          git add packages/core packages/application
+          if git diff --cached --quiet; then
+            echo "Formatting already clean."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "style: apply Prettier formatting"
+          git push origin HEAD:feat/v0.3-s2-service-registry
