@@ -1,8 +1,4 @@
-import type {
-  Module,
-  ModuleBuilder,
-  ModuleType,
-} from "@forgemcp/core";
+import type { Module, ModuleBuilder, ModuleType } from "@forgemcp/core";
 import { describe, expect, it } from "vitest";
 
 import {
@@ -39,9 +35,10 @@ describe("planModuleComposition", () => {
   });
 
   it("orders a dependency before a dependent selected earlier", () => {
-    expect(
-      planModuleComposition([FeatureModule, FoundationModule]),
-    ).toEqual([FoundationModule, FeatureModule]);
+    expect(planModuleComposition([FeatureModule, FoundationModule])).toEqual([
+      FoundationModule,
+      FeatureModule,
+    ]);
   });
 
   it("preserves registration order among otherwise independent modules", () => {
@@ -72,11 +69,7 @@ describe("planModuleComposition", () => {
     }
 
     expect(
-      planModuleComposition([
-        ApiModule,
-        RepositoryModule,
-        FoundationModule,
-      ]),
+      planModuleComposition([ApiModule, RepositoryModule, FoundationModule]),
     ).toEqual([FoundationModule, RepositoryModule, ApiModule]);
   });
 
@@ -202,9 +195,10 @@ describe("planModuleComposition", () => {
       public configure(_builder: ModuleBuilder): void {}
     };
 
-    expect(
-      planModuleComposition([FirstDuplicate, SecondDuplicate]),
-    ).toEqual([FirstDuplicate, SecondDuplicate]);
+    expect(planModuleComposition([FirstDuplicate, SecondDuplicate])).toEqual([
+      FirstDuplicate,
+      SecondDuplicate,
+    ]);
   });
 });
 
