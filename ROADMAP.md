@@ -152,11 +152,26 @@ Sprint 5 establishes:
 - [x] deterministic cleanup failure semantics;
 - [x] end-to-end MCP disposal validation.
 
+### v0.3 Release Acceptance
+
+Status: in progress.
+
+Tracked by issue #69.
+
+Release acceptance establishes:
+
+- [x] all planned v0.3 implementation sprints complete;
+- [x] root and public package manifests target `0.3.0`;
+- [x] lifecycle-aware configuration/dependency behavior documented;
+- [ ] release package smoke coverage and metadata validation;
+- [ ] final build/typecheck/lint/format/test/coverage/security/Sonar gates;
+- [ ] release-ready main commit for the `v0.3.0` tag.
+
 ### Later v0.3 work
 
-Sprint 5 completes the planned implementation slices for v0.3 Configuration and Dependency Management.
+The implementation scope for v0.3 Configuration and Dependency Management is complete. Release acceptance is the final checkpoint before the milestone can be tagged.
 
-The milestone can now move to release-level acceptance. Session/connection scopes, user-created child scopes, optional/conditional module dependencies, automatic constructor injection, decorators, reflection metadata, execution cancellation, and disposal retry policies remain deliberately deferred.
+Session/connection scopes, user-created child scopes, optional/conditional module dependencies, automatic constructor injection, decorators, reflection metadata, execution cancellation, and disposal retry policies remain deliberately deferred.
 
 ## v0.4 — Production Operations
 

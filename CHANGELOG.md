@@ -6,6 +6,8 @@ The project follows semantic versioning once public packages begin publishing st
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-07
+
 ### Added
 
 - protocol-neutral configuration contracts with canonical key semantics;

@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.3 Sprint 5 lifecycle-aware service disposal is complete. ForgeMCP now supports deterministic configuration and dependency management across explicit module graphs, application/execution/transient service lifetimes, and standard resource disposal with graceful shutdown, all validated end to end through the official MCP adapter. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.3 implementation is complete and release acceptance is in progress. ForgeMCP supports deterministic configuration and dependency management across explicit module graphs, application/execution/transient service lifetimes, and standard resource disposal with graceful shutdown, all validated end to end through the official MCP adapter. The workspace now targets v0.3.0; ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
 
 ## Why ForgeMCP?
 
@@ -454,7 +454,7 @@ class EchoModule implements Module {
 
 serveForgeMcpStdio({
   name: "echo-server",
-  version: "0.2.0",
+  version: "0.3.0",
   createApplication: () =>
     ForgeApplicationBuilder.create().use(EchoModule).build(),
 });
