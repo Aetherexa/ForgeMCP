@@ -85,7 +85,6 @@ function registerTool(
   );
 }
 
-
 function installApplicationShutdown(
   server: McpServer,
   application: Application,
