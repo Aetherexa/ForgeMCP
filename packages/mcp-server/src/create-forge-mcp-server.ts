@@ -94,7 +94,7 @@ function installApplicationShutdown(
   let closePromise: Promise<void> | undefined;
 
   const stopApplication = (): Promise<void> => {
-    stopPromise ??= application.stop();
+    stopPromise ??= Promise.resolve(application.stop());
     return stopPromise;
   };
 
