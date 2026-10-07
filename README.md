@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.3 Sprint 4 module dependencies and deterministic composition are complete. ForgeMCP now supports explicit module dependency graphs alongside application, execution-scoped, and transient services, all validated end to end through the official MCP adapter. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.3 Sprint 5 lifecycle-aware service disposal is complete. ForgeMCP now supports deterministic configuration and dependency management across explicit module graphs, application/execution/transient service lifetimes, and standard resource disposal with graceful shutdown, all validated end to end through the official MCP adapter. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
 
 ## Why ForgeMCP?
 
@@ -381,7 +381,49 @@ One `Application.execute()` invocation owns one execution scope. Middleware and 
 
 Application-lifetime services may depend only on other application-lifetime services. An application service that attempts to capture an execution-scoped or transient dependency fails deterministically during startup. Execution-scoped and transient factories may resolve application, execution-scoped, and transient dependencies inside a valid execution scope.
 
-ForgeMCP deliberately does not use a process-global container, decorators, reflection metadata, or automatic constructor injection. Session/connection scopes, user-created child scopes, and lifecycle-aware disposal remain separate future concerns.
+ForgeMCP deliberately does not use a process-global container, decorators, reflection metadata, or automatic constructor injection. Session/connection scopes and user-created child scopes remain separate future concerns.
+
+## Service ownership and disposal
+
+ForgeMCP automatically disposes resources it constructs through service factories. Disposal uses the JavaScript standard resource-management protocols:
+
+1. `Symbol.asyncDispose` when implemented;
+2. otherwise `Symbol.dispose`;
+3. otherwise no cleanup call is required.
+
+Ownership follows the registration boundary:
+
+| Registration | Owner | Automatic cleanup |
+| --- | --- | --- |
+| `provide(token, value)` | caller | never |
+| `provideFactory(token, factory)` | ForgeMCP | startup rollback or application stop |
+| `provideScopedFactory(token, factory)` | ForgeMCP | execution completion |
+| `provideTransientFactory(token, factory)` | ForgeMCP | execution completion for every constructed instance |
+
+This makes it safe to pass shared externally managed clients through `provide(...)` while allowing factory-created database pools, sockets, file handles, exporters, or similar resources to participate in framework cleanup.
+
+```ts
+const database = createServiceToken<DatabaseClient>("database");
+
+const app = ForgeApplicationBuilder.create()
+  .provideFactory(database, async () => {
+    const client = await DatabaseClient.connect();
+
+    return {
+      client,
+      async [Symbol.asyncDispose]() {
+        await client.close();
+      },
+    };
+  })
+  .build();
+```
+
+Factory-created services are disposed in reverse successful-construction order so dependents are released before their dependencies. Execution-scoped and transient resources are cleaned up whether tool execution succeeds or fails. Application services created before a later startup failure are also rolled back.
+
+`Application.stop()` first enters `Stopping`, rejects new executions, waits for already-active executions and their request-owned cleanup, then disposes application-owned services. If cleanup fails, ForgeMCP still attempts the remaining owned resources and reports deterministic disposal diagnostics.
+
+The MCP adapter carries the same guarantee across the protocol boundary: `McpServer.close()` waits for the ForgeMCP application to drain active calls and finish service cleanup before its close promise resolves.
 
 ## Serve the application over MCP
 
