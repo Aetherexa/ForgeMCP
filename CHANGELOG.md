@@ -35,6 +35,14 @@ The project follows semantic versioning once public packages begin publishing st
 - exactly-once module configuration for shared diamond dependencies;
 - module graph validation before configuration resolution, service construction, and module configuration;
 - end-to-end module dependency validation through the official MCP client/server path;
+- framework ownership tracking for factory-created application, execution-scoped, and transient services;
+- standard `Symbol.asyncDispose` / `Symbol.dispose` cleanup with async-dispose precedence;
+- reverse-successful-construction-order cleanup for owned service graphs;
+- startup rollback cleanup for partially constructed application service graphs;
+- execution-scope cleanup on both successful and failed tool invocations;
+- best-effort deterministic service-disposal diagnostics that preserve all cleanup failures;
+- graceful application shutdown that rejects new executions and drains active executions before application-service cleanup;
+- end-to-end lifecycle-aware disposal validation through the official MCP client/server path;
 - runtime coverage thresholds and coverage artifacts in CI;
 - regression tests for application isolation, lifecycle cleanup, MCP request metadata, stdio delegation, and result serialization edge cases;
 - package entry-point smoke tests and package tarball validation;
@@ -42,6 +50,11 @@ The project follows semantic versioning once public packages begin publishing st
 - Dependabot updates for npm dependencies and GitHub Actions;
 - tag-driven GitHub Release delivery workflow with package-version verification;
 - SonarQube Cloud scan configuration with LCOV ingestion and blocking Quality Gate support.
+
+### Changed
+
+- MCP server close now waits for ForgeMCP application drain and service cleanup before the returned close promise resolves;
+- externally supplied `provide(token, value)` instances remain caller-owned even when they implement standard disposal symbols.
 
 
 ## [0.2.0] - 2026-09-29
