@@ -102,12 +102,13 @@ export class ForgeApplication implements Application {
       this.toolRegistry = undefined;
       this.middleware = [];
       this.serviceRuntime = undefined;
-      this.currentState = LifecycleState.Created;
 
       if (serviceRuntime !== undefined) {
         try {
           await serviceRuntime[Symbol.asyncDispose]();
         } catch (cleanupError) {
+          this.currentState = LifecycleState.Created;
+
           throw new AggregateError(
             [error, cleanupError],
             "Application startup failed and service cleanup also failed.",
@@ -115,6 +116,7 @@ export class ForgeApplication implements Application {
         }
       }
 
+      this.currentState = LifecycleState.Created;
       throw error;
     }
   }
@@ -148,7 +150,6 @@ export class ForgeApplication implements Application {
     const services = this.serviceRuntime.createScope();
     const execution = this.executeWithScope<TInput, TResult>(
       services,
-      toolName,
       input,
       attributes,
       tool.execute.bind(tool),
@@ -206,7 +207,6 @@ export class ForgeApplication implements Application {
 
   private async executeWithScope<TInput, TResult>(
     services: ServiceScope,
-    _toolName: string,
     input: TInput,
     attributes: Readonly<Dictionary<unknown>>,
     executeTool: (
