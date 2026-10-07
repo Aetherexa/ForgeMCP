@@ -37,6 +37,7 @@ Current responsibilities include:
 - resolved immutable configuration;
 - explicit and environment-backed configuration sources;
 - deterministic application service registration and resolution;
+- lifetime-aware service ownership and deterministic disposal;
 - `ModuleRegistry`;
 - `ToolRegistry`;
 - `ForgeModuleBuilder`;
@@ -55,6 +56,7 @@ Its responsibilities are:
 - register those tools with the official MCP TypeScript SDK;
 - map MCP request context into ForgeMCP execution attributes;
 - map ForgeMCP tool results into MCP tool-call results;
+- coordinate MCP server close with ForgeMCP application drain and shutdown;
 - provide the stdio serving entry point.
 
 The adapter depends on `@forgemcp/core` and the official MCP server SDK. Core does not depend on MCP packages.
@@ -199,9 +201,28 @@ Application services resolve during startup. Factories may resolve other applica
 
 Each valid `Application.execute()` call creates an independent asynchronous resolver exposed as `ExecutionContext.services`. Middleware and the target tool share the same resolver for that execution. Execution-scoped services are cached inside that resolver; transient services are constructed for every resolution request; already-resolved application services are reused.
 
-Concurrent executions own independent scoped caches and in-flight maps. No request scope is stored in process-global state or shared between calls. When an execution settles, its scope references become unreachable. Explicit disposal hooks are intentionally deferred to the later lifecycle-aware-services slice.
+Concurrent executions own independent scoped caches and in-flight maps. No request scope is stored in process-global state or shared between calls.
 
-The official MCP adapter does not create another dependency scope. Every MCP tool request delegates to `Application.execute()`, so sequential and concurrent MCP calls inherit the same Forge execution-scope semantics.
+### Service ownership and disposal
+
+Factory construction defines framework ownership:
+
+| Registration | Owner | Cleanup boundary |
+| --- | --- | --- |
+| `provide(token, value)` | caller | caller-managed |
+| `provideFactory(token, factory)` | ForgeMCP | startup rollback/application stop |
+| `provideScopedFactory(token, factory)` | ForgeMCP | execution end |
+| `provideTransientFactory(token, factory)` | ForgeMCP | execution end for each constructed instance |
+
+Framework-owned factory results use standard JavaScript resource-management capability detection. `Symbol.asyncDispose` is preferred when present; otherwise `Symbol.dispose` is used. ForgeMCP does not infer lifecycle from method names such as `close()`, `destroy()`, or `shutdown()`.
+
+Successful factory results are tracked in construction-completion order and disposed in reverse order, so dependents are cleaned up before their dependencies. Every transient construction is a distinct ownership entry.
+
+Execution scopes dispose request-owned resources whether middleware/tool execution succeeds or fails. Application startup rollback disposes any already-created application services before returning to `Created`. Cleanup is best-effort: later resources are still attempted after an earlier cleanup failure, and deterministic disposal errors retain service identities plus underlying errors.
+
+A resolver captured from `ExecutionContext.services` cannot create new resources after its execution scope has been disposed.
+
+The official MCP adapter does not create another dependency scope. Every MCP tool request delegates to `Application.execute()`, so sequential and concurrent MCP calls inherit the same Forge execution-scope semantics. `McpServer.close()` waits for application drain and cleanup rather than merely initiating shutdown.
 
 ## Lifecycle
 
@@ -215,13 +236,14 @@ Rules:
 
 - a new application starts in `Created`;
 - `start()` moves it to `Started` after successful module composition;
-- startup failure restores `Created`;
+- startup failure disposes any framework-owned application services already created, then restores `Created`;
 - repeated `start()` calls after startup are idempotent;
-- `stop()` releases runtime registrations and transitions to `Stopped`;
+- `stop()` moves to `Stopping` before waiting, so no new executions can begin;
+- shutdown waits for already-active executions and their execution-scope cleanup before disposing application-owned services;
+- cleanup is attempted once in reverse construction order;
 - repeated `stop()` calls are idempotent;
+- cleanup failure is reported while the application still ends in terminal `Stopped`;
 - `Stopped` is terminal for the current application instance.
-
-Future lifecycle hooks should preserve these state guarantees.
 
 ## Tool execution
 
@@ -259,6 +281,8 @@ Each execution receives a fresh context containing:
 - UTC start timestamp;
 - immutable top-level attributes supplied by the caller;
 - an asynchronous service resolver owned by that execution scope.
+
+The execution promise does not settle successfully until request-owned service cleanup finishes. If tool execution fails, scope cleanup still runs. When both execution and cleanup fail, both errors are preserved.
 
 ## Middleware
 
@@ -320,9 +344,9 @@ The current framework intentionally does not include:
 - HTTP transport integration;
 - session or MCP-connection dependency scopes;
 - child scopes created directly by application code;
-- lifecycle-aware service disposal hooks;
+- arbitrary service start/readiness hooks;
+- optional or conditional module dependency semantics;
 - automatic constructor injection, decorators, or reflection metadata;
-- module dependency graphs;
 - structured logging;
 - telemetry and metrics;
 - authentication or authorization;
