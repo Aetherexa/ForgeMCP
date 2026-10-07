@@ -134,13 +134,29 @@ Sprint 4 establishes:
 - [x] startup integration without partial module composition;
 - [x] end-to-end MCP validation.
 
+### Sprint 5 — Lifecycle-Aware Service Disposal
+
+Status: planned.
+
+Plan: [docs/planning/v0.3-sprint-5.md](./docs/planning/v0.3-sprint-5.md)
+
+Backlog: issues #58–#62, tracked by sprint issue #57.
+
+Sprint 5 establishes:
+
+- [ ] explicit framework/caller service ownership;
+- [ ] standard async/sync disposal support for factory-created services;
+- [ ] reverse-order application and execution-scope cleanup;
+- [ ] startup rollback cleanup;
+- [ ] graceful shutdown that drains active execution scopes;
+- [ ] deterministic cleanup failure semantics;
+- [ ] end-to-end MCP disposal validation.
+
 ### Later v0.3 work
 
-After the module-dependency slice is complete:
+Sprint 5 is the final planned implementation slice for v0.3 Configuration and Dependency Management.
 
-- lifecycle-aware services.
-
-Dependency management continues incrementally. Lifecycle-aware disposal remains later v0.3 work. Session/connection scopes, user-created child scopes, optional/conditional module dependencies, automatic constructor injection, decorators, and reflection metadata remain deliberately deferred.
+After Sprint 5 acceptance, v0.3 can move to release-level acceptance while session/connection scopes, user-created child scopes, optional/conditional module dependencies, automatic constructor injection, decorators, reflection metadata, execution cancellation, and disposal retry policies remain deliberately deferred.
 
 ## v0.4 — Production Operations
 
