@@ -82,14 +82,27 @@ export class ServiceRegistry {
       this.getAll(),
       configuration,
     );
-    const resolution = await engine.resolveAll();
+    try {
+      const resolution = await engine.resolveAll();
 
-    return new ServiceRuntime(
-      this.getAll(),
-      configuration,
-      resolution.services,
-      resolution.ownedServices,
-    );
+      return new ServiceRuntime(
+        this.getAll(),
+        configuration,
+        resolution.services,
+        resolution.ownedServices,
+      );
+    } catch (error) {
+      try {
+        await engine[Symbol.asyncDispose]();
+      } catch (cleanupError) {
+        throw new AggregateError(
+          [error, cleanupError],
+          "Application service resolution failed and cleanup also failed.",
+        );
+      }
+
+      throw error;
+    }
   }
 
   private registerFactoryWithLifetime<TService>(
@@ -132,6 +145,10 @@ class ApplicationServiceResolutionEngine {
     for (const registration of registrations) {
       this.registrations.set(registration.token.id, registration);
     }
+  }
+
+  public [Symbol.asyncDispose](): Promise<void> {
+    return this.ownedServices[Symbol.asyncDispose]();
   }
 
   public async resolveAll(): Promise<ApplicationServiceResolution> {
