@@ -8,6 +8,7 @@ import {
   LifecycleState,
   type Middleware,
   type ModuleType,
+  type Tool,
   type ToolMetadata,
   type ToolResult,
 } from "@forgemcp/core";
@@ -146,7 +147,7 @@ export class ForgeApplication implements Application {
       throw new Error("Application must be started before executing tools.");
     }
 
-    const tool = this.toolRegistry.require(toolName);
+    const tool = this.toolRegistry.require(toolName) as Tool<TInput, TResult>;
     const services = this.serviceRuntime.createScope();
     const execution = this.executeWithScope<TInput, TResult>(
       services,
