@@ -13,6 +13,7 @@ import {
   CircularServiceDependencyError,
   DuplicateServiceRegistrationError,
 } from "./service-errors.js";
+import { OwnedServiceTracker } from "./owned-service-tracker.js";
 import type { ServiceRegistration } from "./service-registration.js";
 import { ResolvedServiceProvider } from "./resolved-service-provider.js";
 import { ServiceRuntime } from "./service-runtime.js";
@@ -81,9 +82,14 @@ export class ServiceRegistry {
       this.getAll(),
       configuration,
     );
-    const services = await engine.resolveAll();
+    const resolution = await engine.resolveAll();
 
-    return new ServiceRuntime(this.getAll(), configuration, services);
+    return new ServiceRuntime(
+      this.getAll(),
+      configuration,
+      resolution.services,
+      resolution.ownedServices,
+    );
   }
 
   private registerFactoryWithLifetime<TService>(
@@ -108,10 +114,16 @@ export class ServiceRegistry {
   }
 }
 
+interface ApplicationServiceResolution {
+  readonly services: ServiceProvider;
+  readonly ownedServices: OwnedServiceTracker;
+}
+
 class ApplicationServiceResolutionEngine {
   private readonly registrations = new Map<symbol, ServiceRegistration>();
   private readonly resolved = new Map<symbol, unknown>();
   private readonly inFlight = new Map<symbol, Promise<unknown>>();
+  private readonly ownedServices = new OwnedServiceTracker();
 
   public constructor(
     registrations: readonly ServiceRegistration[],
@@ -122,14 +134,17 @@ class ApplicationServiceResolutionEngine {
     }
   }
 
-  public async resolveAll(): Promise<ServiceProvider> {
+  public async resolveAll(): Promise<ApplicationServiceResolution> {
     for (const registration of this.registrations.values()) {
       if (registration.lifetime === "application") {
         await this.resolveToken(registration.token, []);
       }
     }
 
-    return new ResolvedServiceProvider(this.resolved);
+    return {
+      services: new ResolvedServiceProvider(this.resolved),
+      ownedServices: this.ownedServices,
+    };
   }
 
   private createResolver(
@@ -242,9 +257,12 @@ class ApplicationServiceResolutionEngine {
       return registration.value;
     }
 
-    return registration.factory({
+    const value = await registration.factory({
       configuration: this.configuration,
       services: this.createResolver(path),
     });
+
+    this.ownedServices.track(registration.token, value);
+    return value;
   }
 }
