@@ -57,3 +57,56 @@ export class CaptiveServiceDependencyError extends Error {
     this.dependencyLifetime = dependencyLifetime;
   }
 }
+
+/**
+ * One failed service cleanup operation.
+ */
+export interface ServiceDisposalFailure {
+  readonly serviceDescription: string;
+  readonly error: unknown;
+}
+
+/**
+ * Raised after best-effort cleanup when one or more owned services fail to
+ * dispose.
+ */
+export class ServiceDisposalError extends Error {
+  public readonly failures: readonly ServiceDisposalFailure[];
+
+  public constructor(failures: readonly ServiceDisposalFailure[]) {
+    const descriptions = failures
+      .map(({ serviceDescription }) => `'${serviceDescription}'`)
+      .join(", ");
+
+    super(
+      failures.length === 1
+        ? `Failed to dispose service ${descriptions}.`
+        : `Failed to dispose ${failures.length} services: ${descriptions}.`,
+    );
+
+    this.name = "ServiceDisposalError";
+    this.failures = Object.freeze(
+      failures.map((failure) => Object.freeze({ ...failure })),
+    );
+  }
+}
+
+/**
+ * Raised when resolution is attempted through a disposed execution scope.
+ */
+export class ServiceScopeDisposedError extends Error {
+  public constructor() {
+    super("Service scope has already been disposed.");
+    this.name = "ServiceScopeDisposedError";
+  }
+}
+
+/**
+ * Raised when a new execution scope is requested after runtime disposal.
+ */
+export class ServiceRuntimeDisposedError extends Error {
+  public constructor() {
+    super("Service runtime has already been disposed.");
+    this.name = "ServiceRuntimeDisposedError";
+  }
+}
