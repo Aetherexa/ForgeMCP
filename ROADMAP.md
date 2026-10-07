@@ -136,7 +136,7 @@ Sprint 4 establishes:
 
 ### Sprint 5 — Lifecycle-Aware Service Disposal
 
-Status: planned.
+Status: complete.
 
 Plan: [docs/planning/v0.3-sprint-5.md](./docs/planning/v0.3-sprint-5.md)
 
@@ -144,19 +144,19 @@ Backlog: issues #58–#62, tracked by sprint issue #57.
 
 Sprint 5 establishes:
 
-- [ ] explicit framework/caller service ownership;
-- [ ] standard async/sync disposal support for factory-created services;
-- [ ] reverse-order application and execution-scope cleanup;
-- [ ] startup rollback cleanup;
-- [ ] graceful shutdown that drains active execution scopes;
-- [ ] deterministic cleanup failure semantics;
-- [ ] end-to-end MCP disposal validation.
+- [x] explicit framework/caller service ownership;
+- [x] standard async/sync disposal support for factory-created services;
+- [x] reverse-order application and execution-scope cleanup;
+- [x] startup rollback cleanup;
+- [x] graceful shutdown that drains active execution scopes;
+- [x] deterministic cleanup failure semantics;
+- [x] end-to-end MCP disposal validation.
 
 ### Later v0.3 work
 
-Sprint 5 is the final planned implementation slice for v0.3 Configuration and Dependency Management.
+Sprint 5 completes the planned implementation slices for v0.3 Configuration and Dependency Management.
 
-After Sprint 5 acceptance, v0.3 can move to release-level acceptance while session/connection scopes, user-created child scopes, optional/conditional module dependencies, automatic constructor injection, decorators, reflection metadata, execution cancellation, and disposal retry policies remain deliberately deferred.
+The milestone can now move to release-level acceptance. Session/connection scopes, user-created child scopes, optional/conditional module dependencies, automatic constructor injection, decorators, reflection metadata, execution cancellation, and disposal retry policies remain deliberately deferred.
 
 ## v0.4 — Production Operations
 
