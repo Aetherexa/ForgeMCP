@@ -33,9 +33,7 @@ export async function createForgeMcpServer(
       registerTool(server, application, tool);
     }
 
-    server.server.onclose = async () => {
-      await application.stop();
-    };
+    installApplicationShutdown(server, application);
 
     return server;
   } catch (error) {
@@ -85,4 +83,31 @@ function registerTool(
       return toMcpToolResult(result);
     },
   );
+}
+
+function installApplicationShutdown(
+  server: McpServer,
+  application: Application,
+): void {
+  const originalClose = server.close.bind(server);
+  let stopPromise: Promise<void> | undefined;
+  let closePromise: Promise<void> | undefined;
+
+  const stopApplication = (): Promise<void> => {
+    stopPromise ??= Promise.resolve(application.stop());
+    return stopPromise;
+  };
+
+  server.server.onclose = () => {
+    void stopApplication();
+  };
+
+  server.close = () => {
+    closePromise ??= (async () => {
+      await originalClose();
+      await stopApplication();
+    })();
+
+    return closePromise;
+  };
 }
