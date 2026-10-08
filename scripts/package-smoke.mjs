@@ -10,6 +10,7 @@ assert.equal(typeof core.createServiceToken, "function");
 assert.equal(typeof core.ServiceNotFoundError, "function");
 assert.equal(typeof core.DiagnosticEventNames, "object");
 assert.equal(typeof core.DiagnosticAttributeNames, "object");
+assert.equal(typeof core.StructuredLogLevels, "object");
 
 assert.equal(typeof application.ForgeApplicationBuilder, "function");
 assert.equal(typeof application.ForgeConfiguration, "function");
