@@ -1,7 +1,4 @@
-import type {
-  StructuredLogRecord,
-  StructuredLogSink,
-} from "@forgemcp/core";
+import type { StructuredLogRecord, StructuredLogSink } from "@forgemcp/core";
 
 /**
  * Creates a structured log sink that writes one JSON object per line to
