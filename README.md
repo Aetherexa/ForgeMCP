@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.3 implementation is complete and release acceptance is in progress. ForgeMCP supports deterministic configuration and dependency management across explicit module graphs, application/execution/transient service lifetimes, and standard resource disposal with graceful shutdown, all validated end to end through the official MCP adapter. The workspace now targets v0.3.0; ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.3.0 is release-ready, with the tag/GitHub Release still pending in issue #69, and v0.4 Sprint 1 observability foundation is complete. ForgeMCP now exposes provider-neutral application/execution diagnostics with stable execution correlation in addition to deterministic configuration, dependency management, scoped services, and lifecycle-aware cleanup. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
 
 ## Why ForgeMCP?
 
@@ -424,6 +424,60 @@ Factory-created services are disposed in reverse successful-construction order s
 `Application.stop()` first enters `Stopping`, rejects new executions, waits for already-active executions and their request-owned cleanup, then disposes application-owned services. If cleanup fails, ForgeMCP still attempts the remaining owned resources and reports deterministic disposal diagnostics.
 
 The MCP adapter carries the same guarantee across the protocol boundary: `McpServer.close()` waits for the ForgeMCP application to drain active calls and finish service cleanup before its close promise resolves.
+
+## Runtime diagnostics and execution correlation
+
+ForgeMCP exposes provider-neutral runtime diagnostics without requiring a logging or telemetry SDK. Register listeners explicitly on the application builder with `observe(...)`:
+
+```ts
+import {
+  DiagnosticAttributeNames,
+  DiagnosticEventNames,
+  type DiagnosticEvent,
+} from "@forgemcp/core";
+import { ForgeApplicationBuilder } from "@forgemcp/application";
+
+const events: DiagnosticEvent[] = [];
+
+const app = ForgeApplicationBuilder.create()
+  .observe({
+    onEvent(event) {
+      events.push(event);
+
+      if (event.name === DiagnosticEventNames.ExecutionCompleted) {
+        console.log({
+          executionId: event.execution?.id,
+          tool: event.attributes[DiagnosticAttributeNames.ToolName],
+          durationMs:
+            event.attributes[DiagnosticAttributeNames.DurationMs],
+        });
+      }
+    },
+  })
+  .use(MyModule)
+  .build();
+```
+
+The initial event vocabulary covers application and execution lifecycle boundaries:
+
+- `application.starting`, `application.started`, `application.start.failed`;
+- `application.stopping`, `application.stopped`, `application.stop.failed`;
+- `execution.started`, `execution.completed`, `execution.failed`.
+
+For execution events, the existing `ExecutionMetadata.id` is the canonical Forge correlation ID. A start event and its terminal completion/failure event carry the same execution ID; concurrent calls receive distinct IDs.
+
+Execution completion/failure is emitted only after request-owned service cleanup has finished, so `duration.ms` measures the full Forge execution boundary.
+
+Diagnostic listeners are:
+
+- application-local rather than process-global;
+- invoked in registration order;
+- synchronous observation hooks intended to hand off to the caller's logging/telemetry provider;
+- failure-isolated—one listener throwing does not fail the application or prevent later listeners from observing the event.
+
+Framework diagnostic attributes do **not** automatically include raw tool input or result values. Execution metadata may still contain attributes explicitly supplied by the caller or transport, so a concrete logger should apply its own serialization/redaction policy before logging arbitrary execution attributes.
+
+MCP calls use the same diagnostic stream. The adapter keeps the Forge-generated execution ID as the framework correlation identity while preserving protocol identifiers in execution attributes such as `mcp.requestId` and, when available, `mcp.sessionId`.
 
 ## Serve the application over MCP
 
