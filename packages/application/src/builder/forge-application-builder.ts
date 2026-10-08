@@ -3,6 +3,7 @@ import type {
   ApplicationBuilder,
   ConfigurationSource,
   ConfigurationValues,
+  type DiagnosticListener,
   ModuleType,
   ServiceFactory,
   ServiceToken,
@@ -20,6 +21,7 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
   private readonly modules = new ModuleRegistry();
   private readonly configurationSources: ConfigurationSource[] = [];
   private readonly services = new ServiceRegistry();
+  private readonly diagnosticListeners: DiagnosticListener[] = [];
 
   /**
    * Prevent direct instantiation.
@@ -65,6 +67,14 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
    */
   public configureFrom(source: ConfigurationSource): this {
     this.configurationSources.push(source);
+    return this;
+  }
+
+  /**
+   * Registers a diagnostic listener for this application.
+   */
+  public observe(listener: DiagnosticListener): this {
+    this.diagnosticListeners.push(listener);
     return this;
   }
 
@@ -120,6 +130,7 @@ export class ForgeApplicationBuilder implements ApplicationBuilder {
       this.modules.getAll(),
       [...this.configurationSources],
       this.services.getAll(),
+      [...this.diagnosticListeners],
     );
   }
 }
