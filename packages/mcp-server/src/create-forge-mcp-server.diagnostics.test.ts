@@ -107,7 +107,9 @@ describe("createForgeMcpServer diagnostics", () => {
       expect(firstCompleted?.execution?.id).toBe(firstStarted?.execution?.id);
       expect(secondStarted?.execution?.id).toBeTruthy();
       expect(secondCompleted?.execution?.id).toBe(secondStarted?.execution?.id);
-      expect(secondStarted?.execution?.id).not.toBe(firstStarted?.execution?.id);
+      expect(secondStarted?.execution?.id).not.toBe(
+        firstStarted?.execution?.id,
+      );
 
       for (const event of events) {
         expect(event.execution?.attributes["mcp.requestId"]).toBeDefined();
