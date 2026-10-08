@@ -141,9 +141,7 @@ describe("ForgeApplication diagnostics", () => {
     expect(
       completed?.attributes[DiagnosticAttributeNames.DurationMs],
     ).toEqual(expect.any(Number));
-    expect(JSON.stringify(started?.attributes)).not.toContain(
-      "never-log-this",
-    );
+    expect(JSON.stringify(started?.attributes)).not.toContain("never-log-this");
     expect(JSON.stringify(completed?.attributes)).not.toContain(
       "never-log-this",
     );
@@ -295,10 +293,7 @@ describe("ForgeApplication diagnostics", () => {
 
     await expect(application.start()).rejects.toThrow("module failed");
 
-    expect(order).toEqual([
-      "application.disposed",
-      "application.start.failed",
-    ]);
+    expect(order).toEqual(["application.disposed", "application.start.failed"]);
     expect(application.state).toBe(LifecycleState.Created);
   });
 
