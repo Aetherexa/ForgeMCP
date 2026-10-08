@@ -3,7 +3,7 @@ import type {
   ApplicationBuilder,
   ConfigurationSource,
   ConfigurationValues,
-  type DiagnosticListener,
+  DiagnosticListener,
   ModuleType,
   ServiceFactory,
   ServiceToken,
