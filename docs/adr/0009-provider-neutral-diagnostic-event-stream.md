@@ -26,11 +26,11 @@ The framework therefore needs a provider-neutral observation boundary rather tha
 
 ForgeMCP will expose runtime diagnostics through an explicit, application-local diagnostic listener model.
 
-The intended contracts are equivalent to:
+The implemented core contracts are:
 
 ```ts
 interface DiagnosticEvent {
-  readonly name: string;
+  readonly name: DiagnosticEventName;
   readonly timestamp: Date;
   readonly attributes: Readonly<Dictionary<unknown>>;
   readonly execution?: ExecutionMetadata;
@@ -41,7 +41,7 @@ interface DiagnosticListener {
 }
 ```
 
-Exact contract names/shapes may be refined during implementation without changing this architectural decision.
+Stable event names are exported through `DiagnosticEventNames`, and stable framework-owned attribute names are exported through `DiagnosticAttributeNames`.
 
 ## Correlation identity
 
@@ -61,7 +61,7 @@ A future tracing integration may add trace/span identifiers, but those identifie
 
 ## Explicit application-local registration
 
-Diagnostic listeners are registered explicitly through the application builder.
+Diagnostic listeners are registered explicitly through `ForgeApplicationBuilder.observe(listener)`.
 
 There is no process-global listener registry.
 
@@ -73,6 +73,8 @@ Consequences:
 - framework packages do not depend on ambient logger state.
 
 Listener registration order is preserved.
+
+The implemented publisher snapshots the listener list per application, invokes listeners synchronously in registration order, and isolates each listener exception so later listeners still receive the same event.
 
 ## Synchronous observation boundary
 
