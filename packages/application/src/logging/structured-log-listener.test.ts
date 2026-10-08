@@ -11,41 +11,74 @@ import { createStructuredLogListener } from "./structured-log-listener.js";
 
 describe("createStructuredLogListener", () => {
   it.each([
-    [DiagnosticEventNames.ApplicationStarting, StructuredLogLevels.Info, "Application starting."],
-    [DiagnosticEventNames.ApplicationStarted, StructuredLogLevels.Info, "Application started."],
-    [DiagnosticEventNames.ApplicationStartFailed, StructuredLogLevels.Error, "Application start failed."],
-    [DiagnosticEventNames.ApplicationStopping, StructuredLogLevels.Info, "Application stopping."],
-    [DiagnosticEventNames.ApplicationStopped, StructuredLogLevels.Info, "Application stopped."],
-    [DiagnosticEventNames.ApplicationStopFailed, StructuredLogLevels.Error, "Application stop failed."],
-    [DiagnosticEventNames.ExecutionStarted, StructuredLogLevels.Info, "Execution started."],
-    [DiagnosticEventNames.ExecutionCompleted, StructuredLogLevels.Info, "Execution completed."],
-    [DiagnosticEventNames.ExecutionFailed, StructuredLogLevels.Error, "Execution failed."],
-  ] as const)(
-    "maps %s to %s",
-    (name, level, message) => {
-      const records: StructuredLogRecord[] = [];
-      const listener = createStructuredLogListener({
-        sink: {
-          write(record) {
-            records.push(record);
-          },
+    [
+      DiagnosticEventNames.ApplicationStarting,
+      StructuredLogLevels.Info,
+      "Application starting.",
+    ],
+    [
+      DiagnosticEventNames.ApplicationStarted,
+      StructuredLogLevels.Info,
+      "Application started.",
+    ],
+    [
+      DiagnosticEventNames.ApplicationStartFailed,
+      StructuredLogLevels.Error,
+      "Application start failed.",
+    ],
+    [
+      DiagnosticEventNames.ApplicationStopping,
+      StructuredLogLevels.Info,
+      "Application stopping.",
+    ],
+    [
+      DiagnosticEventNames.ApplicationStopped,
+      StructuredLogLevels.Info,
+      "Application stopped.",
+    ],
+    [
+      DiagnosticEventNames.ApplicationStopFailed,
+      StructuredLogLevels.Error,
+      "Application stop failed.",
+    ],
+    [
+      DiagnosticEventNames.ExecutionStarted,
+      StructuredLogLevels.Info,
+      "Execution started.",
+    ],
+    [
+      DiagnosticEventNames.ExecutionCompleted,
+      StructuredLogLevels.Info,
+      "Execution completed.",
+    ],
+    [
+      DiagnosticEventNames.ExecutionFailed,
+      StructuredLogLevels.Error,
+      "Execution failed.",
+    ],
+  ] as const)("maps %s to %s", (name, level, message) => {
+    const records: StructuredLogRecord[] = [];
+    const listener = createStructuredLogListener({
+      sink: {
+        write(record) {
+          records.push(record);
         },
-      });
+      },
+    });
 
-      listener.onEvent({
-        name,
-        timestamp: new Date("2026-10-08T12:00:00.000Z"),
-        attributes: {},
-      });
+    listener.onEvent({
+      name,
+      timestamp: new Date("2026-10-08T12:00:00.000Z"),
+      attributes: {},
+    });
 
-      expect(records).toHaveLength(1);
-      expect(records[0]).toMatchObject({
-        level,
-        event: name,
-        message,
-      });
-    },
-  );
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      level,
+      event: name,
+      message,
+    });
+  });
 
   it("preserves Forge correlation and framework attributes", () => {
     const records: StructuredLogRecord[] = [];
