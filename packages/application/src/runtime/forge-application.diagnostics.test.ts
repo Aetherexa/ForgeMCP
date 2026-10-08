@@ -138,9 +138,9 @@ describe("ForgeApplication diagnostics", () => {
     expect(completed?.attributes[DiagnosticAttributeNames.ToolName]).toBe(
       "inspect",
     );
-    expect(
-      completed?.attributes[DiagnosticAttributeNames.DurationMs],
-    ).toEqual(expect.any(Number));
+    expect(completed?.attributes[DiagnosticAttributeNames.DurationMs]).toEqual(
+      expect.any(Number),
+    );
     expect(JSON.stringify(started?.attributes)).not.toContain("never-log-this");
     expect(JSON.stringify(completed?.attributes)).not.toContain(
       "never-log-this",
