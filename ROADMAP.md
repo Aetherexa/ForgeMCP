@@ -177,14 +177,35 @@ Session/connection scopes, user-created child scopes, optional/conditional modul
 
 Goal: make applications observable and diagnosable.
 
-Planned work:
+### Sprint 1 — Observability Foundation and Execution Correlation
+
+Status: planned.
+
+Plan: [docs/planning/v0.4-sprint-1.md](./docs/planning/v0.4-sprint-1.md)
+
+Backlog: issues #72–#76, tracked by sprint issue #71.
+
+Sprint 1 establishes:
+
+- [ ] provider-neutral diagnostic event/listener contracts;
+- [ ] explicit application-local diagnostic listener registration;
+- [ ] stable application and execution lifecycle events;
+- [ ] canonical correlation through the existing Forge execution ID;
+- [ ] diagnostic privacy boundaries that exclude raw input/result payloads by default;
+- [ ] listener failure isolation;
+- [ ] end-to-end MCP execution-correlation validation.
+
+### Later v0.4 work
+
+After the observability foundation:
 
 - structured logging;
-- telemetry hooks;
+- telemetry adapters;
 - traces and metrics;
 - health model;
-- execution correlation;
 - runtime diagnostics.
+
+These later slices should consume the same provider-neutral diagnostic source rather than creating independent lifecycle instrumentation.
 
 ## v0.5 — Resilience and Security
 
