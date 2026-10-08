@@ -6,6 +6,21 @@ The project follows semantic versioning once public packages begin publishing st
 
 ## [Unreleased]
 
+### Added
+
+- provider-neutral diagnostic event and listener contracts in `@forgemcp/core`;
+- explicit application-local diagnostic listener registration through `ForgeApplicationBuilder.observe(...)`;
+- stable application lifecycle diagnostic events for start/stop success and failure;
+- stable execution lifecycle diagnostic events with canonical Forge execution correlation;
+- framework-owned `tool.name` and `duration.ms` diagnostic attributes;
+- listener failure isolation with deterministic registration-order delivery;
+- immutable diagnostic snapshots that exclude raw tool input/result payloads by default;
+- official MCP correlation validation preserving Forge execution IDs alongside MCP request/session attributes.
+
+### Changed
+
+- execution duration diagnostics measure the complete Forge execution boundary, including request-owned service cleanup.
+
 ## [0.3.0] - 2026-10-07
 
 ### Added
