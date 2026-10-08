@@ -195,17 +195,34 @@ Sprint 1 establishes:
 - [x] listener failure isolation;
 - [x] end-to-end MCP execution-correlation validation.
 
+### Sprint 2 — Structured Logging
+
+Status: planned.
+
+Plan: [docs/planning/v0.4-sprint-2.md](./docs/planning/v0.4-sprint-2.md)
+
+Backlog: issues #82–#87, tracked by sprint issue #81.
+
+Sprint 2 establishes:
+
+- [ ] provider-neutral structured logging contracts;
+- [ ] deterministic diagnostic-event to log-level/message mapping;
+- [ ] canonical Forge execution correlation in structured records;
+- [ ] conservative execution-attribute privacy with explicit allowlisting;
+- [ ] immutable structured log records;
+- [ ] stdio-safe JSON Lines output to stderr;
+- [ ] end-to-end MCP structured logging validation.
+
 ### Later v0.4 work
 
-After the observability foundation:
+After structured logging:
 
-- structured logging;
 - telemetry adapters;
 - traces and metrics;
 - health model;
 - runtime diagnostics.
 
-These later slices should consume the same provider-neutral diagnostic source rather than creating independent lifecycle instrumentation.
+These later slices should continue consuming the same provider-neutral diagnostic source rather than creating independent lifecycle instrumentation.
 
 ## v0.5 — Resilience and Security
 
