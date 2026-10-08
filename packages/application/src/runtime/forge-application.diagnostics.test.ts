@@ -217,9 +217,14 @@ describe("ForgeApplication diagnostics", () => {
       public configure(builder: ModuleBuilder): void {
         builder.tool({
           metadata: { name: "wait" },
-          async execute(_context, input: { gate: Promise<void>; value: string }) {
-            await input.gate;
-            return { value: input.value };
+          async execute(_context, input) {
+            const request = input as {
+              gate: Promise<void>;
+              value: string;
+            };
+
+            await request.gate;
+            return { value: request.value };
           },
         });
       }
