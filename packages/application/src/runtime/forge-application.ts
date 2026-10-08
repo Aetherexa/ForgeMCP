@@ -3,8 +3,13 @@ import { randomUUID } from "node:crypto";
 import {
   type Application,
   type ConfigurationSource,
+  DiagnosticAttributeNames,
+  DiagnosticEventNames,
+  type DiagnosticEventName,
+  type DiagnosticListener,
   type Dictionary,
   type ExecutionContext,
+  type ExecutionMetadata,
   LifecycleState,
   type Middleware,
   type ModuleType,
@@ -23,6 +28,7 @@ import type {
   ServiceRuntime,
   ServiceScope,
 } from "../service/service-runtime.js";
+import { DiagnosticPublisher } from "./diagnostic-publisher.js";
 import { ForgeMiddlewarePipeline } from "./forge-middleware-pipeline.js";
 
 /**
@@ -34,6 +40,7 @@ export class ForgeApplication implements Application {
   private middleware: readonly Middleware[] = [];
   private serviceRuntime: ServiceRuntime | undefined;
   private readonly activeExecutions = new Set<Promise<unknown>>();
+  private readonly diagnostics: DiagnosticPublisher;
 
   /**
    * Creates a new Forge application.
@@ -42,7 +49,10 @@ export class ForgeApplication implements Application {
     private readonly modules: readonly ModuleType[],
     private readonly configurationSources: readonly ConfigurationSource[] = [],
     private readonly serviceRegistrations: readonly ServiceRegistration[] = [],
-  ) {}
+    diagnosticListeners: readonly DiagnosticListener[] = [],
+  ) {
+    this.diagnostics = new DiagnosticPublisher(diagnosticListeners);
+  }
 
   /**
    * Current lifecycle state.
@@ -69,6 +79,8 @@ export class ForgeApplication implements Application {
     }
 
     this.currentState = LifecycleState.Starting;
+    this.publishDiagnostic(DiagnosticEventNames.ApplicationStarting);
+
     let serviceRuntime: ServiceRuntime | undefined;
 
     try {
@@ -99,18 +111,19 @@ export class ForgeApplication implements Application {
       this.middleware = moduleBuilder.getMiddleware();
       this.serviceRuntime = serviceRuntime;
       this.currentState = LifecycleState.Started;
+      this.publishDiagnostic(DiagnosticEventNames.ApplicationStarted);
     } catch (error) {
       this.toolRegistry = undefined;
       this.middleware = [];
       this.serviceRuntime = undefined;
 
+      let finalError: unknown = error;
+
       if (serviceRuntime !== undefined) {
         try {
           await serviceRuntime[Symbol.asyncDispose]();
         } catch (cleanupError) {
-          this.currentState = LifecycleState.Created;
-
-          throw new AggregateError(
+          finalError = new AggregateError(
             [error, cleanupError],
             "Application startup failed and service cleanup also failed.",
           );
@@ -118,7 +131,8 @@ export class ForgeApplication implements Application {
       }
 
       this.currentState = LifecycleState.Created;
-      throw error;
+      this.publishDiagnostic(DiagnosticEventNames.ApplicationStartFailed);
+      throw finalError;
     }
   }
 
@@ -151,6 +165,7 @@ export class ForgeApplication implements Application {
     const services = this.serviceRuntime.createScope();
     const execution = this.executeWithScope<TInput, TResult>(
       services,
+      toolName,
       input,
       attributes,
       tool.execute.bind(tool),
@@ -176,10 +191,14 @@ export class ForgeApplication implements Application {
     }
 
     if (this.currentState === LifecycleState.Created) {
+      this.currentState = LifecycleState.Stopping;
+      this.publishDiagnostic(DiagnosticEventNames.ApplicationStopping);
+
       this.toolRegistry = undefined;
       this.middleware = [];
       this.serviceRuntime = undefined;
       this.currentState = LifecycleState.Stopped;
+      this.publishDiagnostic(DiagnosticEventNames.ApplicationStopped);
       return;
     }
 
@@ -190,7 +209,11 @@ export class ForgeApplication implements Application {
     }
 
     this.currentState = LifecycleState.Stopping;
+    this.publishDiagnostic(DiagnosticEventNames.ApplicationStopping);
+
     const serviceRuntime = this.serviceRuntime;
+    let stopFailed = false;
+    let stopError: unknown;
 
     try {
       await Promise.allSettled([...this.activeExecutions]);
@@ -198,16 +221,27 @@ export class ForgeApplication implements Application {
       if (serviceRuntime !== undefined) {
         await serviceRuntime[Symbol.asyncDispose]();
       }
+    } catch (error) {
+      stopFailed = true;
+      stopError = error;
     } finally {
       this.toolRegistry = undefined;
       this.middleware = [];
       this.serviceRuntime = undefined;
       this.currentState = LifecycleState.Stopped;
     }
+
+    if (stopFailed) {
+      this.publishDiagnostic(DiagnosticEventNames.ApplicationStopFailed);
+      throw stopError;
+    }
+
+    this.publishDiagnostic(DiagnosticEventNames.ApplicationStopped);
   }
 
   private async executeWithScope<TInput, TResult>(
     services: ServiceScope,
+    toolName: string,
     input: TInput,
     attributes: Readonly<Dictionary<unknown>>,
     executeTool: (
@@ -215,14 +249,24 @@ export class ForgeApplication implements Application {
       input: TInput,
     ) => Promise<ToolResult<TResult>> | ToolResult<TResult>,
   ): Promise<ToolResult<TResult>> {
+    const execution: ExecutionMetadata = Object.freeze({
+      id: randomUUID(),
+      startedAt: new Date(),
+      attributes: Object.freeze({ ...attributes }),
+    });
+
     const context: ExecutionContext = {
-      execution: {
-        id: randomUUID(),
-        startedAt: new Date(),
-        attributes: Object.freeze({ ...attributes }),
-      },
+      execution,
       services,
     };
+
+    this.publishDiagnostic(
+      DiagnosticEventNames.ExecutionStarted,
+      {
+        [DiagnosticAttributeNames.ToolName]: toolName,
+      },
+      execution,
+    );
 
     const pipeline = new ForgeMiddlewarePipeline(
       this.middleware,
@@ -230,30 +274,84 @@ export class ForgeApplication implements Application {
         executeTool(executionContext, currentInput as TInput),
     );
 
+    let operationFailed = false;
+    let operationError: unknown;
+    let result: ToolResult<TResult> | undefined;
+
     try {
-      const result = (await pipeline.execute(
-        context,
-        input,
-      )) as ToolResult<TResult>;
-
-      await services[Symbol.asyncDispose]();
-      return result;
-    } catch (operationError) {
-      try {
-        await services[Symbol.asyncDispose]();
-      } catch (cleanupError) {
-        if (cleanupError === operationError) {
-          throw operationError;
-        }
-
-        throw new AggregateError(
-          [operationError, cleanupError],
-          "Tool execution failed and service cleanup also failed.",
-        );
-      }
-
-      throw operationError;
+      result = (await pipeline.execute(context, input)) as ToolResult<TResult>;
+    } catch (error) {
+      operationFailed = true;
+      operationError = error;
     }
+
+    let cleanupFailed = false;
+    let cleanupError: unknown;
+
+    try {
+      await services[Symbol.asyncDispose]();
+    } catch (error) {
+      cleanupFailed = true;
+      cleanupError = error;
+    }
+
+    const terminalAttributes = {
+      [DiagnosticAttributeNames.ToolName]: toolName,
+      [DiagnosticAttributeNames.DurationMs]: Math.max(
+        0,
+        Date.now() - execution.startedAt.getTime(),
+      ),
+    };
+
+    if (operationFailed) {
+      const finalError =
+        cleanupFailed && cleanupError !== operationError
+          ? new AggregateError(
+              [operationError, cleanupError],
+              "Tool execution failed and service cleanup also failed.",
+            )
+          : operationError;
+
+      this.publishDiagnostic(
+        DiagnosticEventNames.ExecutionFailed,
+        terminalAttributes,
+        execution,
+      );
+
+      throw finalError;
+    }
+
+    if (cleanupFailed) {
+      this.publishDiagnostic(
+        DiagnosticEventNames.ExecutionFailed,
+        terminalAttributes,
+        execution,
+      );
+      throw cleanupError;
+    }
+
+    this.publishDiagnostic(
+      DiagnosticEventNames.ExecutionCompleted,
+      terminalAttributes,
+      execution,
+    );
+
+    return result as ToolResult<TResult>;
+  }
+
+  private publishDiagnostic(
+    name: DiagnosticEventName,
+    attributes: Readonly<Dictionary<unknown>> = {},
+    execution?: ExecutionMetadata,
+  ): void {
+    this.diagnostics.publish(
+      Object.freeze({
+        name,
+        timestamp: new Date(),
+        attributes: Object.freeze({ ...attributes }),
+        ...(execution === undefined ? {} : { execution }),
+      }),
+    );
   }
 
   private requireToolRegistry(): ToolRegistry {

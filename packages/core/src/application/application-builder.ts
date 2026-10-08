@@ -2,6 +2,7 @@ import type {
   ConfigurationSource,
   ConfigurationValues,
 } from "../configuration/index.js";
+import type { DiagnosticListener } from "../diagnostics/index.js";
 import type { ModuleType } from "../module/index.js";
 import type { ServiceFactory, ServiceToken } from "../service/index.js";
 import type { MaybePromise } from "../types/maybe-promise.js";
@@ -13,6 +14,8 @@ export interface ApplicationBuilder {
   configure(values: ConfigurationValues): this;
 
   configureFrom(source: ConfigurationSource): this;
+
+  observe(listener: DiagnosticListener): this;
 
   provide<TService>(token: ServiceToken<TService>, value: TService): this;
 

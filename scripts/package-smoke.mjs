@@ -8,6 +8,8 @@ const stdio = await import("../packages/mcp-server/dist/stdio.mjs");
 assert.equal(typeof core.LifecycleState, "object");
 assert.equal(typeof core.createServiceToken, "function");
 assert.equal(typeof core.ServiceNotFoundError, "function");
+assert.equal(typeof core.DiagnosticEventNames, "object");
+assert.equal(typeof core.DiagnosticAttributeNames, "object");
 
 assert.equal(typeof application.ForgeApplicationBuilder, "function");
 assert.equal(typeof application.ForgeConfiguration, "function");
