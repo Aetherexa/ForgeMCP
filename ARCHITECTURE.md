@@ -18,6 +18,7 @@ Current areas include:
 - configuration contracts;
 - service tokens, factories, resolvers, and providers;
 - execution context;
+- provider-neutral diagnostic event/listener contracts;
 - lifecycle;
 - modules;
 - middleware;
@@ -38,6 +39,7 @@ Current responsibilities include:
 - explicit and environment-backed configuration sources;
 - deterministic application service registration and resolution;
 - lifetime-aware service ownership and deterministic disposal;
+- application-local diagnostic listener delivery and lifecycle event emission;
 - `ModuleRegistry`;
 - `ToolRegistry`;
 - `ForgeModuleBuilder`;
@@ -224,6 +226,61 @@ A resolver captured from `ExecutionContext.services` cannot create new resources
 
 The official MCP adapter does not create another dependency scope. Every MCP tool request delegates to `Application.execute()`, so sequential and concurrent MCP calls inherit the same Forge execution-scope semantics. `McpServer.close()` waits for application drain and cleanup rather than merely initiating shutdown.
 
+## Runtime diagnostics and execution correlation
+
+ForgeMCP exposes lifecycle facts through a provider-neutral diagnostic event stream rather than embedding a concrete logging or telemetry SDK.
+
+```text
+ForgeApplicationBuilder.observe(listener)
+             |
+             v
+       ForgeApplication
+             |
+             +--> application.* events
+             |
+             +--> Application.execute(...)
+                       |
+                       +--> execution.started
+                       |
+                       +--> middleware/tool/scope cleanup
+                       |
+                       +--> execution.completed
+                       |       or
+                       +--> execution.failed
+```
+
+The core contracts are `DiagnosticEvent` and `DiagnosticListener`. Runtime event names and framework attribute names are exported through `DiagnosticEventNames` and `DiagnosticAttributeNames`.
+
+Diagnostic listeners belong to one application instance. There is no process-global listener registry. Registration order is preserved, and listener exceptions are isolated so diagnostics cannot change startup, tool, cleanup, or shutdown outcomes.
+
+### Correlation
+
+`ExecutionMetadata.id` is the canonical Forge execution correlation identity. ForgeMCP does not create a second framework request or trace ID for diagnostics.
+
+One execution's start and terminal event share the same execution metadata. Concurrent executions may interleave, so consumers correlate by `execution.id` rather than global event order.
+
+MCP transport identifiers remain execution attributes:
+
+- `mcp.requestId`;
+- `mcp.sessionId` when supplied by the transport;
+- `mcp.meta` when supplied by the protocol request.
+
+No MCP SDK type enters the core diagnostics contracts.
+
+### Event timing
+
+Application failure events are emitted only after the existing rollback/cleanup boundary has completed.
+
+Execution terminal events are emitted after execution-scope cleanup. Consequently `duration.ms` measures the complete Forge execution promise boundary, including request-owned cleanup.
+
+### Privacy boundary
+
+Framework-owned event attributes contain runtime facts such as tool name and duration. ForgeMCP does not automatically copy raw tool input or result values into diagnostic events.
+
+Execution metadata can contain application- or transport-provided attributes because those values already belong to the execution context. Concrete logging/telemetry adapters therefore own any policy for serializing or redacting arbitrary execution attributes.
+
+The diagnostic stream is the common source for later structured logging, tracing, metrics, health, and runtime-diagnostics work. Those features should consume these lifecycle facts instead of introducing independent instrumentation.
+
 ## Lifecycle
 
 The application lifecycle is intentionally explicit.
@@ -347,8 +404,8 @@ The current framework intentionally does not include:
 - arbitrary service start/readiness hooks;
 - optional or conditional module dependency semantics;
 - automatic constructor injection, decorators, or reflection metadata;
-- structured logging;
-- telemetry and metrics;
+- built-in structured logging adapters;
+- telemetry exporters, traces, and metrics;
 - authentication or authorization;
 - retry/resilience policies;
 - plugin discovery;
