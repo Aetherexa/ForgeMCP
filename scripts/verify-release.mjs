@@ -5,6 +5,7 @@ const packagePaths = [
   "packages/core/package.json",
   "packages/application/package.json",
   "packages/mcp-server/package.json",
+  "packages/telemetry-otel/package.json",
 ];
 
 const manifests = await Promise.all(

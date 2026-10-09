@@ -6,3 +6,4 @@ export * from "./registry/index.js";
 export * from "./service/index.js";
 export * from "./telemetry/index.js";
 export * from "./health/index.js";
+export * from "./diagnostics/index.js";

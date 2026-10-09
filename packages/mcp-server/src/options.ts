@@ -22,5 +22,8 @@ export interface ForgeMcpServerOptions {
   /**
    * Creates a fresh ForgeMCP application for one MCP server instance.
    */
+  /** Opt in to copying string W3C context fields from request _meta. */
+  readonly captureTraceContext?: boolean;
+
   readonly createApplication: () => MaybePromise<Application>;
 }

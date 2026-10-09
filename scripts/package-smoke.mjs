@@ -35,3 +35,8 @@ await healthApp.stop();
 assert.equal(health.liveness().status, "down");
 
 console.log("Built v0.3 package entry points loaded successfully.");
+
+const otel = await import("../packages/telemetry-otel/dist/index.mjs");
+if (typeof otel.createOpenTelemetrySink !== "function") throw new Error("Missing OpenTelemetry export");
+const diagnostics = application.createRuntimeDiagnostics();
+if (diagnostics.snapshot().activeExecutions !== 0) throw new Error("Invalid diagnostics export");

@@ -52,3 +52,32 @@ describe("createMcpExecutionAttributes", () => {
     });
   });
 });
+
+it("requires opt-in and only copies string propagation fields", () => {
+  const context = createContext({
+    mcpReq: {
+      id: "r",
+      _meta: {
+        traceparent: "parent",
+        tracestate: "vendor=value",
+        baggage: "secret",
+      },
+    },
+  });
+  expect(createMcpExecutionAttributes(context)).not.toHaveProperty(
+    "traceparent",
+  );
+  expect(createMcpExecutionAttributes(context, true)).toMatchObject({
+    traceparent: "parent",
+    tracestate: "vendor=value",
+  });
+  const invalid = createContext({
+    mcpReq: { id: "r", _meta: { traceparent: {}, tracestate: 1 } },
+  });
+  expect(createMcpExecutionAttributes(invalid, true)).not.toHaveProperty(
+    "traceparent",
+  );
+  expect(
+    createMcpExecutionAttributes(createContext({ mcpReq: { id: "r" } }), true),
+  ).not.toHaveProperty("tracestate");
+});

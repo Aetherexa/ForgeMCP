@@ -63,6 +63,7 @@ jobs:
           pnpm --dir packages/core pack --pack-destination ../../release
           pnpm --dir packages/application pack --pack-destination ../../release
           pnpm --dir packages/mcp-server pack --pack-destination ../../release
+          pnpm --dir packages/telemetry-otel pack --pack-destination ../../release
           ls -la release
 
       - name: Create or update GitHub release
