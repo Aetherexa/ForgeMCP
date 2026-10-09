@@ -515,6 +515,38 @@ provider queues, retries, backpressure and shutdown remain caller responsibiliti
 
 See [official MCP logging validation](./docs/validation/issue-86-official-mcp-logging.md).
 
+## Execution traces and metrics
+
+Attach a provider-neutral telemetry listener alongside logging:
+
+```ts
+import { createExecutionTelemetryListener } from "@forgemcp/application";
+
+const listener = createExecutionTelemetryListener({
+  sink: {
+    writeSpan(span) { myTelemetryProvider.acceptCompletedSpan(span); },
+    recordMetric(metric) { myTelemetryProvider.acceptMeasurement(metric); },
+  },
+  executionAttributeNames: ["mcp.requestId", "mcp.sessionId"],
+});
+
+const app = ForgeApplicationBuilder.create()
+  .observe(listener)
+  .use(MyModule)
+  .build();
+```
+
+`myTelemetryProvider` is your adapter, not a ForgeMCP dependency. Each completed
+execution produces a canonical Forge span and `forge.execution.count` /
+`forge.execution.duration` measurements. Status is `ok` or `error`; duration
+includes execution-scope cleanup. Metrics contain only tool name and status,
+never high-cardinality execution/MCP IDs or selected application attributes.
+
+Use one listener per application, attached before calls. Default privacy excludes
+arbitrary metadata, payloads and exceptions. Each provider callback is isolated;
+providers own buffering, aggregation, flush and shutdown. Completed spans do not
+create live distributed trace context. See [Sprint 3 semantics](./docs/planning/v0.4-sprint-3.md).
+
 ## Serve the application over MCP
 
 ForgeMCP tools can declare any input schema implementing Standard Schema and Standard JSON Schema. Zod v4 works directly:

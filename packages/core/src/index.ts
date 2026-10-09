@@ -9,3 +9,4 @@ export * from "./module/index.js";
 export * from "./service/index.js";
 export * from "./tool/index.js";
 export * from "./types/index.js";
+export * from "./telemetry/index.js";

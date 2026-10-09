@@ -19,6 +19,7 @@ assert.equal(typeof application.ServiceDisposalError, "function");
 assert.equal(typeof application.MissingModuleDependencyError, "function");
 assert.equal(typeof application.CircularModuleDependencyError, "function");
 assert.equal(typeof application.createStructuredLogListener, "function");
+assert.equal(typeof application.createExecutionTelemetryListener, "function");
 assert.equal(typeof application.createStderrJsonLogSink, "function");
 
 assert.equal(typeof mcpServer.createForgeMcpServer, "function");

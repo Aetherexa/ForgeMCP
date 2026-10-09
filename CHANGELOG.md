@@ -8,6 +8,11 @@ The project follows semantic versioning once public packages begin publishing st
 
 ### Added
 
+- portable execution span, count/duration measurement and telemetry sink contracts;
+- diagnostic-derived execution telemetry with private-by-default span attributes;
+- independently isolated provider callbacks and low-cardinality metric labels;
+- official MCP telemetry validation including failure, concurrency and cleanup;
+
 - provider-neutral structured logging contracts and deterministic event mapping;
 - explicit execution-attribute allowlisting with private-by-default payloads;
 - stderr-only JSON Lines logging with ISO-8601 timestamps;
