@@ -215,7 +215,7 @@ Sprint 2 establishes:
 
 ### Sprint 3 — Execution telemetry adapters, traces and metrics
 
-Status: implementation complete; acceptance tracked by issue #94.
+Status: complete (PR #95; acceptance #94).
 
 Plan: [docs/planning/v0.4-sprint-3.md](./docs/planning/v0.4-sprint-3.md)
 
@@ -226,7 +226,7 @@ Plan: [docs/planning/v0.4-sprint-3.md](./docs/planning/v0.4-sprint-3.md)
 - [x] private span attributes and low-cardinality metric dimensions;
 - [x] provider failure isolation and application-local state cleanup;
 - [x] official MCP concurrency/failure/cleanup validation;
-- [ ] CI/security/Sonar acceptance and merge.
+- [x] CI/security/Sonar acceptance and merge.
 
 ### Later v0.4 work
 
