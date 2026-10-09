@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.3.0 is release-ready, with the tag/GitHub Release still pending in issue #69, and v0.4 Sprint 1 observability foundation is complete. ForgeMCP now exposes provider-neutral application/execution diagnostics with stable execution correlation in addition to deterministic configuration, dependency management, scoped services, and lifecycle-aware cleanup. ForgeMCP remains pre-1.0 and the packages are not yet published as stable npm releases.
+> **Status:** v0.3.0 release tagging remains tracked in #69. v0.4 observability now includes diagnostics, structured logging, portable telemetry, health, runtime snapshots and an optional OpenTelemetry adapter. ForgeMCP remains pre-1.0; stable npm packages are not yet published.
 
 ## Why ForgeMCP?
 
@@ -651,3 +651,43 @@ The official MCP SDK owns protocol negotiation and stdio framing. ForgeMCP owns 
 ## License
 
 ForgeMCP is licensed under the MIT License. See [LICENSE](./LICENSE).
+
+
+## Runtime diagnostic snapshots
+
+```ts
+import { createRuntimeDiagnostics, ForgeApplicationBuilder } from "@forgemcp/application";
+
+const diagnostics = createRuntimeDiagnostics();
+const app = ForgeApplicationBuilder.create().observe(diagnostics.listener).build();
+await app.start();
+console.log(diagnostics.snapshot()); // state, active/completed/failed counts only
+await app.stop();
+```
+
+Attach before startup and use one provider per application. Active calls include
+request cleanup; snapshots contain no payloads, metadata or IDs. Counts reflect
+observed events, not process health. See [Sprint 5](./docs/planning/v0.4-sprint-5.md).
+
+## Optional OpenTelemetry adapter
+
+Install `@forgemcp/telemetry-otel` when using OpenTelemetry. Supply a tracer and
+meter from your own providers; configure exporters and flush/shutdown yourself.
+
+```ts
+import { createExecutionTelemetryListener } from "@forgemcp/application";
+import { createOpenTelemetrySink } from "@forgemcp/telemetry-otel";
+
+const listener = createExecutionTelemetryListener({
+  sink: createOpenTelemetrySink({ tracer, meter }),
+});
+// Attach with builder.observe(listener) before startup.
+```
+
+This exports completed SERVER spans plus execution count/duration measurements.
+Only finite primitive selected attributes are copied. Remote parents are disabled
+by default. Incoming MCP W3C context requires `captureTraceContext: true` on the
+server, selection of `traceparent`/`tracestate` in the listener, and
+`acceptRemoteParent: true` on the sink. Each call gets an independent parent;
+Forge IDs remain distinct from trace IDs. No baggage or live tool-body context is
+created. See [Sprint 6](./docs/planning/v0.4-sprint-6.md) for trust and lifecycle limits.

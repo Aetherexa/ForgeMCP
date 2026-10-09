@@ -30,7 +30,7 @@ export async function createForgeMcpServer(
     });
 
     for (const tool of application.listTools()) {
-      registerTool(server, application, tool);
+      registerTool(server, application, tool, options.captureTraceContext);
     }
 
     installApplicationShutdown(server, application);
@@ -46,6 +46,7 @@ function registerTool(
   server: McpServer,
   application: Application,
   tool: ToolMetadata,
+  captureTraceContext?: boolean,
 ): void {
   const config = {
     ...(tool.description === undefined
@@ -58,7 +59,7 @@ function registerTool(
       const result = await application.execute(
         tool.name,
         undefined,
-        createMcpExecutionAttributes(context),
+        createMcpExecutionAttributes(context, captureTraceContext),
       );
 
       return toMcpToolResult(result);
@@ -77,7 +78,7 @@ function registerTool(
       const result = await application.execute(
         tool.name,
         input,
-        createMcpExecutionAttributes(context),
+        createMcpExecutionAttributes(context, captureTraceContext),
       );
 
       return toMcpToolResult(result);

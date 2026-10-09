@@ -7,6 +7,7 @@ import type { ServerContext } from "@modelcontextprotocol/server";
  */
 export function createMcpExecutionAttributes(
   context: ServerContext,
+  captureTraceContext = false,
 ): Readonly<Dictionary<unknown>> {
   const attributes: Dictionary<unknown> = {
     "mcp.requestId": context.mcpReq.id,
@@ -20,5 +21,11 @@ export function createMcpExecutionAttributes(
     attributes["mcp.meta"] = context.mcpReq._meta;
   }
 
+  if (captureTraceContext) {
+    for (const name of ["traceparent", "tracestate"] as const) {
+      const value = context.mcpReq._meta?.[name];
+      if (typeof value === "string") attributes[name] = value;
+    }
+  }
   return Object.freeze(attributes);
 }

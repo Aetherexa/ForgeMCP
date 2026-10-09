@@ -8,6 +8,11 @@ The project follows semantic versioning once public packages begin publishing st
 
 ### Added
 
+- immutable privacy-safe runtime snapshots with lifecycle and execution counters;
+- optional OpenTelemetry completed-span, count and duration adapter with caller-owned providers;
+- explicit MCP W3C context capture and opt-in per-call remote-parent correlation;
+- real OpenTelemetry exporter and official MCP concurrency/privacy validation;
+
 - portable application health, readiness, liveness and dependency check contracts;
 - explicit lifecycle health provider with bounded concurrent readiness probes;
 - safe failure codes, frozen reports and lifecycle rechecking during shutdown;

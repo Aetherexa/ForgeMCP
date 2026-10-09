@@ -59,7 +59,8 @@ jobs:
           pnpm --dir packages/core pack --pack-destination ../../release
           pnpm --dir packages/application pack --pack-destination ../../release
           pnpm --dir packages/mcp-server pack --pack-destination ../../release
-          test "$(find release -maxdepth 1 -name '*.tgz' | wc -l)" -eq 3
+          pnpm --dir packages/telemetry-otel pack --pack-destination ../../release
+          test "$(find release -maxdepth 1 -name '*.tgz' | wc -l)" -eq 4
 
       - name: Typecheck
         run: pnpm typecheck
@@ -81,6 +82,7 @@ jobs:
           path: |
             packages/application/coverage/**
             packages/mcp-server/coverage/**
+            packages/telemetry-otel/coverage/**
           if-no-files-found: warn
           retention-days: 14
 

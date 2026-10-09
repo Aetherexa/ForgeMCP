@@ -1,5 +1,6 @@
 import {
   createExecutionTelemetryListener,
+  createRuntimeDiagnostics,
   ForgeApplicationBuilder,
 } from "@forgemcp/application";
 import {
@@ -44,7 +45,10 @@ describe("official MCP execution telemetry", () => {
               const resource = await context.services.require(scopedToken);
               resource.id = context.execution.id;
               entered += 1;
-              if (entered === 2) release();
+              if (entered === 2) {
+                expect(diagnostics.snapshot().activeExecutions).toBe(2);
+                release();
+              }
               await barrier;
               if (input.fail) throw new Error("private-error-secret");
               return { value: input.secret };
@@ -52,7 +56,9 @@ describe("official MCP execution telemetry", () => {
           });
         }
       }
+      const diagnostics = createRuntimeDiagnostics();
       const app = ForgeApplicationBuilder.create()
+        .observe(diagnostics.listener)
         .provideFactory(disposableToken, () => ({
           [Symbol.dispose]() {
             disposed += 1;
@@ -111,6 +117,12 @@ describe("official MCP execution telemetry", () => {
           { type: "text", text: "private-payload-secret" },
         ]);
         expect(results[1]?.isError).toBe(true);
+        expect(diagnostics.snapshot()).toEqual({
+          state: LifecycleState.Started,
+          activeExecutions: 0,
+          completedExecutions: 1,
+          failedExecutions: 1,
+        });
         expect(spans).toHaveLength(2);
         expect(cleaned).toHaveLength(2);
         expect(cleanupAtSpan).toEqual([true, true]);
@@ -150,6 +162,7 @@ describe("official MCP execution telemetry", () => {
         }
         await server.close();
         await server.close();
+        expect(diagnostics.snapshot().state).toBe(LifecycleState.Stopped);
         expect(disposed).toBe(1);
         expect(app.state).toBe(LifecycleState.Stopped);
       } finally {

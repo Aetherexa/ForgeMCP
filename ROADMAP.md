@@ -241,12 +241,14 @@ Plan: [docs/planning/v0.4-sprint-4.md](./docs/planning/v0.4-sprint-4.md)
 - [x] official MCP health and graceful drain validation;
 - [x] CI/security/Sonar acceptance and merge (required before landing).
 
-### Later v0.4 work
+### v0.4 Sprints 5 and 6
 
-After application health:
+After application health, implemented with acceptance gates:
 
-- concrete vendor adapters and distributed context propagation;
-- runtime diagnostics.
+- optional OpenTelemetry completed-span/metrics adapter and explicit incoming W3C parent correlation (Sprint 6, #99);
+- aggregate runtime diagnostic snapshots (Sprint 5, #98).
+
+See [Sprint 5](./docs/planning/v0.4-sprint-5.md) and [Sprint 6](./docs/planning/v0.4-sprint-6.md). Live tool-body distributed context and automatic outbound propagation require a future design.
 
 These later slices should continue consuming the same provider-neutral diagnostic source rather than creating independent lifecycle instrumentation.
 
