@@ -447,3 +447,16 @@ independently and cannot affect runtime outcomes or later observations.
 Span execution attributes require selection. Metrics use only tool and status
 labels. Exporter SDKs, distributed context and provider lifecycle are outside
 core/application; this slice performs no protocol or runtime instrumentation.
+
+## Application health boundary
+
+Core owns health status/report/check/provider contracts. Application's explicit
+`createApplicationHealth` observes the lifecycle getter and invokes caller-owned
+dependency checks for readiness. It does not modify Application, tool execution,
+module composition, service ownership or MCP adapter registration.
+
+Liveness follows lifecycle availability; readiness requires Started and all checks
+up. Checks run concurrently with bounded observation and deterministic output.
+Safe failure codes replace raw exceptions/results. Reports are frozen, lifecycle
+is rechecked after probes, and late probe rejections are consumed. Health owns no
+provider resources and installs no transport endpoints or background scheduler.

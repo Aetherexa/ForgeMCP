@@ -20,9 +20,18 @@ assert.equal(typeof application.MissingModuleDependencyError, "function");
 assert.equal(typeof application.CircularModuleDependencyError, "function");
 assert.equal(typeof application.createStructuredLogListener, "function");
 assert.equal(typeof application.createExecutionTelemetryListener, "function");
+assert.equal(typeof application.createApplicationHealth, "function");
 assert.equal(typeof application.createStderrJsonLogSink, "function");
 
 assert.equal(typeof mcpServer.createForgeMcpServer, "function");
 assert.equal(typeof stdio.serveForgeMcpStdio, "function");
+
+const healthApp = application.ForgeApplicationBuilder.create().build();
+const health = application.createApplicationHealth(healthApp);
+assert.equal(health.liveness().status, "down");
+await healthApp.start();
+assert.equal((await health.readiness()).status, "up");
+await healthApp.stop();
+assert.equal(health.liveness().status, "down");
 
 console.log("Built v0.3 package entry points loaded successfully.");
