@@ -547,6 +547,50 @@ arbitrary metadata, payloads and exceptions. Each provider callback is isolated;
 providers own buffering, aggregation, flush and shutdown. Completed spans do not
 create live distributed trace context. See [Sprint 3 semantics](./docs/planning/v0.4-sprint-3.md).
 
+## Application health
+
+Create an explicit lifecycle/health observer:
+
+```ts
+import { createApplicationHealth, ForgeApplicationBuilder } from "@forgemcp/application";
+import type { HealthStatus } from "@forgemcp/core";
+
+const app = ForgeApplicationBuilder.create().use(MyModule).build();
+const health = createApplicationHealth(app, {
+  checks: [{
+    name: "database",
+    // database is a caller-managed client; the check must bound its own I/O.
+    async check(): Promise<HealthStatus> {
+      return (await database.ping()) ? "up" : "down";
+    },
+  }],
+  timeoutMs: 1000,
+});
+
+await app.start();
+const live = health.liveness();
+const ready = await health.readiness();
+```
+
+Liveness is up during Starting, Started and Stopping, and down before startup or
+after shutdown. This reports application lifecycle availability, not process or
+event-loop health. Readiness requires Started and all registered checks to be up.
+A started application with no checks is ready. Checks affect readiness only.
+
+Checks run concurrently, with deterministic report ordering and independent
+deadlines. Failures and invalid results become down statuses with safe reason
+codes; raw errors and provider data are omitted. Check names must be safe operator
+labels. Reports are frozen. The lifecycle is rechecked after probes so shutdown
+cannot be followed by a stale up report.
+
+Probe deadlines bound asynchronous observation; they do not cancel I/O or
+interrupt blocking synchronous checks. Provider I/O deadlines remain caller-owned.
+There are no background probes or caches, and health does not change tool admission
+or lifecycle. Applications choose how to expose and authorize HTTP endpoints or
+explicit MCP health tools; no endpoint/tool is registered automatically.
+
+See [Sprint 4 semantics](./docs/planning/v0.4-sprint-4.md).
+
 ## Serve the application over MCP
 
 ForgeMCP tools can declare any input schema implementing Standard Schema and Standard JSON Schema. Zod v4 works directly:

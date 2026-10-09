@@ -228,12 +228,24 @@ Plan: [docs/planning/v0.4-sprint-3.md](./docs/planning/v0.4-sprint-3.md)
 - [x] official MCP concurrency/failure/cleanup validation;
 - [x] CI/security/Sonar acceptance and merge.
 
+### Sprint 4 — Application health, readiness and liveness
+
+Status: complete upon acceptance (#96).
+
+Plan: [docs/planning/v0.4-sprint-4.md](./docs/planning/v0.4-sprint-4.md)
+
+- [x] provider-neutral health contracts and explicit provider;
+- [x] lifecycle-derived liveness and dependency readiness;
+- [x] bounded concurrent probes with deterministic ordering;
+- [x] safe reports, failure isolation and shutdown race protection;
+- [x] official MCP health and graceful drain validation;
+- [x] CI/security/Sonar acceptance and merge (required before landing).
+
 ### Later v0.4 work
 
-After execution telemetry:
+After application health:
 
 - concrete vendor adapters and distributed context propagation;
-- health model;
 - runtime diagnostics.
 
 These later slices should continue consuming the same provider-neutral diagnostic source rather than creating independent lifecycle instrumentation.

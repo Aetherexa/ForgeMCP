@@ -8,6 +8,11 @@ The project follows semantic versioning once public packages begin publishing st
 
 ### Added
 
+- portable application health, readiness, liveness and dependency check contracts;
+- explicit lifecycle health provider with bounded concurrent readiness probes;
+- safe failure codes, frozen reports and lifecycle rechecking during shutdown;
+- official MCP health validation preserving normal calls and graceful drain;
+
 - portable execution span, count/duration measurement and telemetry sink contracts;
 - diagnostic-derived execution telemetry with private-by-default span attributes;
 - independently isolated provider callbacks and low-cardinality metric labels;
