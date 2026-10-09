@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "@forgemcp/core": "workspace:*",
-    "@modelcontextprotocol/server": "^2.1.0"
+    "@modelcontextprotocol/server": "^2.3.1"
   },
   "devDependencies": {
     "@forgemcp/application": "workspace:*",
