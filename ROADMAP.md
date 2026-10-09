@@ -197,7 +197,7 @@ Sprint 1 establishes:
 
 ### Sprint 2 — Structured Logging
 
-Status: implementation complete; final acceptance tracked in #87.
+Status: complete.
 
 Plan: [docs/planning/v0.4-sprint-2.md](./docs/planning/v0.4-sprint-2.md)
 
@@ -213,12 +213,26 @@ Sprint 2 establishes:
 - [x] stdio-safe JSON Lines output to stderr;
 - [x] end-to-end MCP structured logging validation.
 
+### Sprint 3 — Execution telemetry adapters, traces and metrics
+
+Status: implementation complete; acceptance tracked by issue #94.
+
+Plan: [docs/planning/v0.4-sprint-3.md](./docs/planning/v0.4-sprint-3.md)
+
+- [x] provider-neutral execution span/metric/sink contracts;
+- [x] explicit diagnostic-derived telemetry listener;
+- [x] correlated completed spans with success/failure status;
+- [x] count and cleanup-inclusive duration measurements;
+- [x] private span attributes and low-cardinality metric dimensions;
+- [x] provider failure isolation and application-local state cleanup;
+- [x] official MCP concurrency/failure/cleanup validation;
+- [ ] CI/security/Sonar acceptance and merge.
+
 ### Later v0.4 work
 
-After structured logging:
+After execution telemetry:
 
-- telemetry adapters;
-- traces and metrics;
+- concrete vendor adapters and distributed context propagation;
 - health model;
 - runtime diagnostics.
 

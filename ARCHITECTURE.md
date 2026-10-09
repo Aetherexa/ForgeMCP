@@ -435,3 +435,15 @@ Forge execution IDs remain canonical, with MCP IDs as optional supporting data.
 The built-in JSON Lines sink writes only to stderr, preserving protocol stdout.
 Existing diagnostic-listener isolation prevents mapping or sink failures from
 changing application outcomes. SDK/exporter lifecycle remains caller-owned.
+
+## Execution telemetry boundary
+
+The application-local `createExecutionTelemetryListener` pairs existing execution
+start/terminal diagnostics by Forge ID. It releases state before sending one
+completed span and count/duration measurements through core's portable sink.
+Lifecycle terminal events clear incomplete state. Provider callbacks fail
+independently and cannot affect runtime outcomes or later observations.
+
+Span execution attributes require selection. Metrics use only tool and status
+labels. Exporter SDKs, distributed context and provider lifecycle are outside
+core/application; this slice performs no protocol or runtime instrumentation.
