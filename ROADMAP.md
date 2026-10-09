@@ -197,7 +197,7 @@ Sprint 1 establishes:
 
 ### Sprint 2 — Structured Logging
 
-Status: planned.
+Status: implementation complete; final acceptance tracked in #87.
 
 Plan: [docs/planning/v0.4-sprint-2.md](./docs/planning/v0.4-sprint-2.md)
 
@@ -205,13 +205,13 @@ Backlog: issues #82–#87, tracked by sprint issue #81.
 
 Sprint 2 establishes:
 
-- [ ] provider-neutral structured logging contracts;
-- [ ] deterministic diagnostic-event to log-level/message mapping;
-- [ ] canonical Forge execution correlation in structured records;
-- [ ] conservative execution-attribute privacy with explicit allowlisting;
-- [ ] immutable structured log records;
-- [ ] stdio-safe JSON Lines output to stderr;
-- [ ] end-to-end MCP structured logging validation.
+- [x] provider-neutral structured logging contracts;
+- [x] deterministic diagnostic-event to log-level/message mapping;
+- [x] canonical Forge execution correlation in structured records;
+- [x] conservative execution-attribute privacy with explicit allowlisting;
+- [x] immutable structured log records;
+- [x] stdio-safe JSON Lines output to stderr;
+- [x] end-to-end MCP structured logging validation.
 
 ### Later v0.4 work
 

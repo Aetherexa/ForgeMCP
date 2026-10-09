@@ -479,6 +479,42 @@ Framework diagnostic attributes do **not** automatically include raw tool input 
 
 MCP calls use the same diagnostic stream. The adapter keeps the Forge-generated execution ID as the framework correlation identity while preserving protocol identifiers in execution attributes such as `mcp.requestId` and, when available, `mcp.sessionId`.
 
+## Structured logging
+
+Attach logging explicitly to the diagnostic stream:
+
+```ts
+import {
+  ForgeApplicationBuilder,
+  createStructuredLogListener,
+  createStderrJsonLogSink,
+} from "@forgemcp/application";
+
+const app = ForgeApplicationBuilder.create()
+  .observe(createStructuredLogListener({
+    sink: createStderrJsonLogSink(),
+    executionAttributeNames: ["mcp.requestId", "mcp.sessionId"],
+  }))
+  .use(MyModule)
+  .build();
+```
+
+Omit `executionAttributeNames` for default privacy. Framework attributes such
+as `tool.name` and `duration.ms` are included; arbitrary execution attributes,
+MCP metadata, raw inputs/results, configuration, service values, and exceptions
+are not automatically serialized. Allowlisted nested values remain caller-owned.
+
+Records contain `timestamp`, `level`, `event`, `message`, optional canonical
+Forge `executionId`, and `attributes`. Normal events use `info`; failure events
+use `error`. The built-in sink writes one JSON object plus newline to stderr,
+with ISO-8601 timestamps. Never send application logs to MCP protocol stdout.
+
+A custom synchronous `StructuredLogSink.write(record)` can hand records to a
+logging provider. Listener/sink failures remain observational and isolated;
+provider queues, retries, backpressure and shutdown remain caller responsibilities.
+
+See [official MCP logging validation](./docs/validation/issue-86-official-mcp-logging.md).
+
 ## Serve the application over MCP
 
 ForgeMCP tools can declare any input schema implementing Standard Schema and Standard JSON Schema. Zod v4 works directly:

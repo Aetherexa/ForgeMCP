@@ -422,3 +422,16 @@ New framework capabilities should satisfy all of the following:
 3. Runtime behavior is covered by tests.
 4. Public APIs avoid unnecessary breaking changes.
 5. New abstractions are introduced only when a real runtime use case requires them.
+
+## Structured logging boundary
+
+`ForgeApplication` emits `DiagnosticEvent` facts. The application-local
+`createStructuredLogListener` projects those facts into frozen structured log
+records and invokes a caller-selected synchronous sink. No lifecycle code is
+instrumented twice. Core owns only provider-neutral contracts.
+
+Framework attributes are retained; execution attributes require explicit names.
+Forge execution IDs remain canonical, with MCP IDs as optional supporting data.
+The built-in JSON Lines sink writes only to stderr, preserving protocol stdout.
+Existing diagnostic-listener isolation prevents mapping or sink failures from
+changing application outcomes. SDK/exporter lifecycle remains caller-owned.

@@ -8,6 +8,11 @@ The project follows semantic versioning once public packages begin publishing st
 
 ### Added
 
+- provider-neutral structured logging contracts and deterministic event mapping;
+- explicit execution-attribute allowlisting with private-by-default payloads;
+- stderr-only JSON Lines logging with ISO-8601 timestamps;
+- official MCP structured logging validation for concurrent calls and lifecycle;
+
 - provider-neutral diagnostic event and listener contracts in `@forgemcp/core`;
 - explicit application-local diagnostic listener registration through `ForgeApplicationBuilder.observe(...)`;
 - stable application lifecycle diagnostic events for start/stop success and failure;
