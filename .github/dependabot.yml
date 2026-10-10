@@ -9,6 +9,14 @@ updates:
       timezone: "UTC"
     open-pull-requests-limit: 10
     groups:
+      vitest:
+        patterns:
+          - vitest
+          - "@vitest/*"
+        update-types:
+          - major
+          - minor
+          - patch
       runtime-minor-and-patch:
         applies-to: version-updates
         dependency-type: production

@@ -31,17 +31,17 @@
   },
   "dependencies": {
     "@forgemcp/core": "workspace:*",
-    "@modelcontextprotocol/server": "^2.1.0"
+    "@modelcontextprotocol/server": "^2.3.1"
   },
   "devDependencies": {
     "@forgemcp/application": "workspace:*",
-    "@modelcontextprotocol/client": "^2.1.0",
-    "@types/node": "^24.0.0",
-    "prettier": "^3.0.0",
+    "@modelcontextprotocol/client": "^2.3.1",
+    "@types/node": "^26.6.4",
+    "prettier": "^3.9.9",
     "rimraf": "^6.0.0",
-    "typescript": "^5.9.0",
-    "vitest": "^3.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^5.0.3",
     "zod": "^4.6.5",
-    "@vitest/coverage-v8": "^3.0.0"
+    "@vitest/coverage-v8": "^5.0.3"
   }
 }
