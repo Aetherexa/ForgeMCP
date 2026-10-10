@@ -6,6 +6,8 @@ The project follows semantic versioning once public packages begin publishing st
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-10
+
 ### Added
 
 - immutable privacy-safe runtime snapshots with lifecycle and execution counters;

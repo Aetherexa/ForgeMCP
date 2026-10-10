@@ -4,7 +4,7 @@ ForgeMCP is an application framework for building production-grade Model Context
 
 The official MCP SDK provides protocol primitives. ForgeMCP is designed for the application layer above those primitives: composition, lifecycle, middleware, execution context, validation, configuration, dependency management, observability, resilience, testing, and developer tooling.
 
-> **Status:** v0.3.0 release tagging remains tracked in #69. v0.4 observability now includes diagnostics, structured logging, portable telemetry, health, runtime snapshots and an optional OpenTelemetry adapter. ForgeMCP remains pre-1.0; stable npm packages are not yet published.
+> **Status:** v0.4.0 is repository release-ready with diagnostics, structured logging, portable telemetry, health, runtime snapshots and an optional OpenTelemetry adapter. GitHub tagging/release publication remains a separate step; stable npm packages are not yet published. Historical v0.3 tagging remains tracked in #69.
 
 ## Why ForgeMCP?
 
@@ -691,3 +691,18 @@ server, selection of `traceparent`/`tracestate` in the listener, and
 `acceptRemoteParent: true` on the sink. Each call gets an independent parent;
 Forge IDs remain distinct from trace IDs. No baggage or live tool-body context is
 created. See [Sprint 6](./docs/planning/v0.4-sprint-6.md) for trust and lifecycle limits.
+
+
+## v0.4 release validation
+
+Run `pnpm install --frozen-lockfile`, `pnpm run clean`, `pnpm build`,
+`pnpm release:verify`, `pnpm package:smoke`, and `pnpm package:verify`.
+The last command packs all four packages, installs the tarballs into a temporary
+consumer outside the workspace, verifies rewritten dependency versions and export
+files, and exercises the public lifecycle, logging, telemetry, health and snapshot
+APIs. It requires registry access for external runtime dependencies and removes
+the temporary consumer afterward. Run typecheck, lint, format and test coverage
+before proposing a release. CI also runs security, CodeQL and Sonar gates.
+
+See [v0.4 acceptance](./docs/planning/v0.4-release-acceptance.md). Packages remain
+ESM-only and target Node 24 or newer. npm publishing is not enabled.
