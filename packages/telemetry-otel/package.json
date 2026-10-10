@@ -28,7 +28,7 @@
   "dependencies": {
     "@forgemcp/core": "workspace:*",
     "@opentelemetry/api": "^1.9.0",
-    "@opentelemetry/core": "^2.6.1"
+    "@opentelemetry/core": "^2.12.0"
   },
   "devDependencies": {
     "@types/node": "^26.6.4",
@@ -37,8 +37,8 @@
     "typescript": "^7.0.2",
     "vitest": "^5.0.3",
     "@vitest/coverage-v8": "^5.0.3",
-    "@opentelemetry/sdk-trace-base": "^2.6.1",
-    "@opentelemetry/sdk-metrics": "^2.6.1",
+    "@opentelemetry/sdk-trace-base": "^2.12.0",
+    "@opentelemetry/sdk-metrics": "^2.12.0",
     "@forgemcp/application": "workspace:*",
     "@forgemcp/mcp-server": "workspace:*",
     "@modelcontextprotocol/client": "^2.3.1",
