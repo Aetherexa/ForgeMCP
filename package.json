@@ -1,6 +1,6 @@
 {
   "name": "forgemcp",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "description": "Enterprise TypeScript framework for building Model Context Protocol (MCP) servers.",
   "license": "MIT",
@@ -10,14 +10,15 @@
   },
   "scripts": {
     "build": "pnpm -r build",
-    "clean": "pnpm -r clean",
+    "clean": "pnpm -r run clean",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
     "typecheck": "pnpm -r typecheck",
-    "format": "pnpm -r format",
+    "format": "pnpm -r format && pnpm --filter @forgemcp/application exec prettier --check \"../../scripts/**/*.mjs\"",
     "test:coverage": "pnpm --filter @forgemcp/core test && pnpm --filter @forgemcp/application test:coverage && pnpm --filter @forgemcp/mcp-server test:coverage && pnpm --filter @forgemcp/telemetry-otel test:coverage",
     "release:verify": "node scripts/verify-release.mjs",
-    "package:smoke": "node scripts/package-smoke.mjs"
+    "package:smoke": "node scripts/package-smoke.mjs",
+    "package:verify": "node scripts/verify-package-consumer.mjs"
   },
   "devDependencies": {
     "tsdown": "^0.23.0"

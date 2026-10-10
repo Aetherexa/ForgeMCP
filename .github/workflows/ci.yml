@@ -48,10 +48,13 @@ jobs:
         run: pnpm release:verify
 
       - name: Build
-        run: pnpm build
+        run: pnpm run clean && pnpm build
 
       - name: Smoke test package entry points
         run: pnpm package:smoke
+
+      - name: Verify packed packages in an isolated consumer
+        run: pnpm package:verify
 
       - name: Pack publishable packages
         run: |

@@ -10,7 +10,10 @@ const packagePaths = [
 
 const manifests = await Promise.all(
   packagePaths.map(async (path) => {
-    const content = await readFile(new URL(`../${path}`, import.meta.url), "utf8");
+    const content = await readFile(
+      new URL(`../${path}`, import.meta.url),
+      "utf8",
+    );
     return [path, JSON.parse(content)];
   }),
 );

@@ -154,7 +154,7 @@ Sprint 5 establishes:
 
 ### v0.3 Release Acceptance
 
-Status: in progress.
+Status: repository readiness complete in PR #70; historical tag/release pending (#69).
 
 Tracked by issue #69.
 
@@ -163,9 +163,10 @@ Release acceptance establishes:
 - [x] all planned v0.3 implementation sprints complete;
 - [x] root and public package manifests target `0.3.0`;
 - [x] lifecycle-aware configuration/dependency behavior documented;
-- [ ] release package smoke coverage and metadata validation;
-- [ ] final build/typecheck/lint/format/test/coverage/security/Sonar gates;
-- [ ] release-ready main commit for the `v0.3.0` tag.
+- [x] release package smoke coverage and metadata validation;
+- [x] final build/typecheck/lint/format/test/coverage/security/Sonar gates;
+- [x] release-ready historical commit `335389308692c36bb9baee410614b49550339bb7`;
+- [ ] create the historical `v0.3.0` tag/GitHub Release from that commit.
 
 ### Later v0.3 work
 
@@ -251,6 +252,20 @@ After application health, implemented with acceptance gates:
 See [Sprint 5](./docs/planning/v0.4-sprint-5.md) and [Sprint 6](./docs/planning/v0.4-sprint-6.md). Live tool-body distributed context and automatic outbound propagation require a future design.
 
 These later slices should continue consuming the same provider-neutral diagnostic source rather than creating independent lifecycle instrumentation.
+
+### v0.4 Release Acceptance
+
+Status: repository release-ready upon green acceptance and merge (#104).
+
+- [x] all four public packages and root manifest target `0.4.0`;
+- [x] dated changelog and explicit completed-span tracing limits;
+- [x] clean builds and isolated tarball consumer verification;
+- [x] public export/dependency rewrite checks in CI and release workflows;
+- [x] local quality checks and required CI/security/Sonar acceptance before merge;
+- [ ] tag/GitHub Release after selecting the accepted main commit;
+- npm publication remains disabled.
+
+Plan: [v0.4 release acceptance](./docs/planning/v0.4-release-acceptance.md).
 
 ## v0.5 — Resilience and Security
 
