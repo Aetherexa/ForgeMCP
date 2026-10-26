@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@forgemcp/core": "workspace:*",
-    "@opentelemetry/api": "^1.9.0",
+    "@opentelemetry/api": "^1.10.0",
     "@opentelemetry/core": "^2.12.0"
   },
   "devDependencies": {
